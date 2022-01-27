@@ -2,17 +2,21 @@ Flat profile:
 
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
- time   seconds   seconds    calls  ms/call  ms/call  name    
- 36.26      2.15     2.15                             __cos_fma
- 25.38      3.66     1.51                             __ieee754_exp_fma
- 24.54      5.11     1.46                             __sin_fma
-  8.94      5.64     0.53        1   530.01   530.01  main
-  3.46      5.85     0.21                             expf64
-  0.42      5.87     0.03                             __cos_ifunc
-  0.42      5.90     0.03                             __mpranred
-  0.34      5.92     0.02                             __dubcos_fma
-  0.17      5.93     0.01                             __dubsin_fma
-  0.08      5.93     0.01                             __slowexp
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+ 33.97      2.04     2.04                             __cos_fma
+ 29.30      3.79     1.76                             __sin_fma
+ 25.21      5.30     1.51                             __ieee754_exp_fma
+  4.67      5.58     0.28                             main (simpleprofiling.c:17 @ 400cde)
+  2.50      5.73     0.15                             expf64
+  2.00      5.85     0.12                             main (simpleprofiling.c:21 @ 400d31)
+  0.50      5.88     0.03                             __cos_ifunc
+  0.50      5.91     0.03                             __mpranred
+  0.33      5.93     0.02                             __slowexp
+  0.33      5.95     0.02                             main (simpleprofiling.c:16 @ 400d04)
+  0.33      5.97     0.02                             main (simpleprofiling.c:20 @ 400d67)
+  0.17      5.98     0.01                             __docos_fma
+  0.17      5.99     0.01                             __dubsin_fma
+  0.00      5.99     0.00        1     0.00     0.00  main (simpleprofiling.c:8 @ 400cbd)
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -50,42 +54,38 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 2 byte(s) for 0.17% of 5.93 seconds
+granularity: each sample hit covers 2 byte(s) for 0.17% of 5.99 seconds
 
 index % time    self  children    called     name
                                                  <spontaneous>
-[1]     36.3    2.15    0.00                 __cos_fma [1]
+[1]     34.0    2.04    0.00                 __cos_fma [1]
 -----------------------------------------------
                                                  <spontaneous>
-[2]     25.4    1.51    0.00                 __ieee754_exp_fma [2]
+[2]     29.3    1.76    0.00                 __sin_fma [2]
 -----------------------------------------------
                                                  <spontaneous>
-[3]     24.5    1.46    0.00                 __sin_fma [3]
------------------------------------------------
-                0.53    0.00       1/1           __libc_start_main [5]
-[4]      8.9    0.53    0.00       1         main [4]
+[3]     25.2    1.51    0.00                 __ieee754_exp_fma [3]
 -----------------------------------------------
                                                  <spontaneous>
-[5]      8.9    0.00    0.53                 __libc_start_main [5]
-                0.53    0.00       1/1           main [4]
+[5]      2.5    0.15    0.00                 expf64 [5]
 -----------------------------------------------
                                                  <spontaneous>
-[6]      3.5    0.21    0.00                 expf64 [6]
+[7]      0.5    0.03    0.00                 __cos_ifunc [7]
 -----------------------------------------------
                                                  <spontaneous>
-[7]      0.4    0.03    0.00                 __cos_ifunc [7]
+[8]      0.5    0.03    0.00                 __mpranred [8]
 -----------------------------------------------
                                                  <spontaneous>
-[8]      0.4    0.03    0.00                 __mpranred [8]
+[11]     0.3    0.02    0.00                 __slowexp [11]
 -----------------------------------------------
                                                  <spontaneous>
-[9]      0.3    0.02    0.00                 __dubcos_fma [9]
+[12]     0.2    0.01    0.00                 __docos_fma [12]
 -----------------------------------------------
                                                  <spontaneous>
-[10]     0.2    0.01    0.00                 __dubsin_fma [10]
+[13]     0.2    0.01    0.00                 __dubsin_fma [13]
 -----------------------------------------------
-                                                 <spontaneous>
-[11]     0.1    0.01    0.00                 __slowexp [11]
+                0.00    0.00       1/1           __libc_start_main [597]
+[14]     0.0    0.00    0.00       1         main (simpleprofiling.c:8 @ 400cbd) [14]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -178,7 +178,8 @@ notice and this notice are preserved.
 
 Index by function name
 
-   [1] __cos_fma               [2] __ieee754_exp_fma       [6] expf64
-   [7] __cos_ifunc             [8] __mpranred              [4] main
-   [9] __dubcos_fma            [3] __sin_fma
-  [10] __dubsin_fma           [11] __slowexp
+   [1] __cos_fma               [8] __mpranred              [4] main (simpleprofiling.c:17 @ 400cde)
+   [7] __cos_ifunc             [2] __sin_fma               [9] main (simpleprofiling.c:16 @ 400d04)
+  [12] __docos_fma            [11] __slowexp               [6] main (simpleprofiling.c:21 @ 400d31)
+  [13] __dubsin_fma            [5] expf64                 [10] main (simpleprofiling.c:20 @ 400d67)
+   [3] __ieee754_exp_fma      [14] main (simpleprofiling.c:8 @ 400cbd)
