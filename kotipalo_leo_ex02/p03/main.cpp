@@ -7,8 +7,18 @@ T f(int n)
 {
 	T sum = 0;
 	for (int k = 0; k <= n; ++k)
-		sum += std::exp(std::sin((T) k / 100'000));
+		sum += std::exp(std::sin(static_cast<T>(k) / 100'000));
 	return sum;
+}
+
+template<typename T>
+void test()
+{
+	auto start = std::chrono::steady_clock::now();
+	float sum_float = f<T>(100'000'000);
+	auto end = std::chrono::steady_clock::now();
+	std::chrono::duration<double> seconds = end - start;
+	std::cout << "Using " << sizeof(T) * 8 << "-bit floats " << sum_float << " calculated in " << seconds.count() << "s" << std::endl;
 }
 
 int main()
@@ -18,25 +28,9 @@ int main()
 	static_assert(sizeof(double) == 64/8);
 	static_assert(sizeof(long double) == 128/8);
 
-	int n = 100'000'000;
-
-	auto start = std::chrono::steady_clock::now();
-	float sum_float = f<float>(n);
-	auto end = std::chrono::steady_clock::now();
-	std::chrono::duration<double> seconds = end - start;
-	std::cout << "Using 32-bit floats " << sum_float << " calculated in " << seconds.count() << "s" << std::endl;
-
-	start = std::chrono::steady_clock::now();
-	double sum_double = f<double>(n);
-	end = std::chrono::steady_clock::now();
-	seconds = end - start;
-	std::cout << "Using 64-bit floats " << sum_double << " calculated in " << seconds.count() << "s" << std::endl;
-
-	start = std::chrono::steady_clock::now();
-	long double sum_long_double = f<long double>(n);
-	end = std::chrono::steady_clock::now();
-	seconds = end - start;
-	std::cout << "Using 128-bit floats " << sum_long_double << " calculated in " << seconds.count() << "s" << std::endl;
+	test<float>();
+	test<double>();
+	test<long double>();
 
 	return 0;
 }
