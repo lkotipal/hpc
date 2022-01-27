@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c11 -Og -pg -lm -static
+CFLAGS=-std=c17 -Og -pg -lm -static
 
 main: simpleprofiling.c
 	$(CC) -o simpleprofiling.exe simpleprofiling.c $(CFLAGS) 
