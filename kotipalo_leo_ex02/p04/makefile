@@ -1,8 +1,8 @@
 CC=gcc
-CFLAGS=-std=c17 -Og -pg -static
+CFLAGS=-std=c11 -Og -pg -lm -static
 
 main: simpleprofiling.c
-	$(CC) $(CFLAGS) -o simpleprofiling simpleprofiling.c
+	$(CC) -o simpleprofiling.exe simpleprofiling.c $(CFLAGS) 
 
 clean:
 	rm -f *.o *.exe *.out
