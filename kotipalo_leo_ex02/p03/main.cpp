@@ -1,4 +1,3 @@
-#include <cassert>
 #include <cmath>
 #include <chrono>
 #include <iostream>
@@ -15,9 +14,9 @@ T f(int n)
 int main()
 {
 	// Check floating point sizes
-	assert(sizeof(float) == 32/8);
-	assert(sizeof(double) == 64/8);
-	assert(sizeof(long double) == 128/8);
+	static_assert(sizeof(float) == 32/8);
+	static_assert(sizeof(double) == 64/8);
+	static_assert(sizeof(long double) == 128/8);
 
 	int n = 100'000'000;
 
@@ -38,7 +37,6 @@ int main()
 	end = std::chrono::steady_clock::now();
 	seconds = end - start;
 	std::cout << "Using 128-bit floats " << sum_long_double << " calculated in " << seconds.count() << "s" << std::endl;
-
 
 	return 0;
 }
