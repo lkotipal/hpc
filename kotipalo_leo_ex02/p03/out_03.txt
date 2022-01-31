@@ -1,0 +1,3 @@
+Using 32-bit floats 6.71089e+07 calculated in 65.9559s
+Using 64-bit floats 1.26628e+09 calculated in 64.1751s
+Using 128-bit floats 1.26628e+09 calculated in 112.151s
