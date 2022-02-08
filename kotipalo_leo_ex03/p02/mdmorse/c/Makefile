@@ -1,7 +1,7 @@
 # $Id: Makefile 12 2008-09-15 20:05:15Z aakurone $ 
 
 
-CC= gcc -Og -g -pg -std=c90
+CC= gcc -O0 -g -pg -std=c90
 
 HEADERS=global.h
 OBJECTS= main.o inout.o physical.o neighbourlist.o solve.o forces.o

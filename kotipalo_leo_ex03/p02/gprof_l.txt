@@ -1,0 +1,303 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+ 13.18      8.34     8.34                             GetForces (forces.c:88 @ 42f0)
+  5.54     11.84     3.51                             GetForces (forces.c:69 @ 413f)
+  5.30     15.19     3.35                             UpdateNeighbourlist (neighbourlist.c:46 @ 2f65)
+  4.84     18.25     3.06                             UpdateNeighbourlist (neighbourlist.c:50 @ 300e)
+  4.55     21.14     2.88                             UpdateNeighbourlist (neighbourlist.c:54 @ 30b9)
+  4.00     23.67     2.53                             GetForces (forces.c:47 @ 3ec0)
+  3.76     26.04     2.38                             GetForces (forces.c:92 @ 4323)
+  3.04     27.96     1.92                             GetForces (forces.c:55 @ 4032)
+  2.96     29.83     1.87                             GetForces (forces.c:73 @ 418a)
+  2.80     31.60     1.77                             UpdateNeighbourlist (neighbourlist.c:58 @ 3164)
+  2.78     33.36     1.76                             GetForces (forces.c:86 @ 42ce)
+  2.72     35.08     1.72                             UpdateNeighbourlist (neighbourlist.c:60 @ 3190)
+  2.55     36.69     1.61                             GetForces (forces.c:51 @ 3f78)
+  2.39     38.20     1.51                             GetForces (forces.c:74 @ 41bd)
+  2.33     39.68     1.48                             UpdateNeighbourlist (neighbourlist.c:52 @ 3086)
+  2.21     41.07     1.40                             GetForces (forces.c:65 @ 4128)
+  2.04     42.36     1.29                             GetForces (forces.c:94 @ 43d5)
+  1.90     43.56     1.20                             GetForces (forces.c:44 @ 3e9f)
+  1.90     44.76     1.20                             GetForces (forces.c:97 @ 44e9)
+  1.83     45.92     1.16                             UpdateNeighbourlist (neighbourlist.c:48 @ 2fdb)
+  1.78     47.05     1.13                             GetForces (forces.c:95 @ 4433)
+  1.71     48.13     1.08                             GetForces (forces.c:42 @ 4541)
+  1.70     49.20     1.08                             GetForces (forces.c:48 @ 3f14)
+  1.64     50.24     1.04                             GetForces (forces.c:96 @ 448b)
+  1.60     51.25     1.01                             UpdateNeighbourlist (neighbourlist.c:51 @ 305b)
+  1.54     52.22     0.98                             GetForces (forces.c:49 @ 3f42)
+  1.52     53.18     0.96                             GetForces (forces.c:93 @ 437f)
+  1.38     54.06     0.88                             GetForces (forces.c:83 @ 427c)
+  1.37     54.92     0.87                             UpdateNeighbourlist (neighbourlist.c:47 @ 2fb0)
+  1.36     55.78     0.86                             GetForces (forces.c:61 @ 4118)
+  1.15     56.51     0.73                             GetForces (forces.c:59 @ 40ec)
+  0.95     57.11     0.60                             GetForces (forces.c:53 @ 3ffc)
+  0.89     57.68     0.56                             GetForces (forces.c:75 @ 41f8)
+  0.82     58.20     0.52                             GetForces (forces.c:52 @ 3fce)
+  0.82     58.72     0.52                             GetForces (forces.c:80 @ 422d)
+  0.66     59.14     0.42                             UpdateNeighbourlist (neighbourlist.c:67 @ 31cc)
+  0.63     59.54     0.40                             UpdateNeighbourlist (neighbourlist.c:56 @ 3131)
+  0.62     59.93     0.40                             GetForces (forces.c:57 @ 40b6)
+  0.60     60.31     0.38                             UpdateNeighbourlist (neighbourlist.c:55 @ 3106)
+  0.52     60.64     0.33                             UpdateNeighbourlist (neighbourlist.c:61 @ 319c)
+  0.49     60.95     0.31                             UpdateNeighbourlist (neighbourlist.c:43 @ 31f0)
+  0.43     61.22     0.27                             UpdateNeighbourlist (neighbourlist.c:43 @ 2f4d)
+  0.36     61.45     0.23                             UpdateNeighbourlist (neighbourlist.c:44 @ 31ef)
+  0.32     61.65     0.20                             UpdateNeighbourlist (neighbourlist.c:63 @ 31a4)
+  0.25     61.81     0.16                             GetForces (forces.c:56 @ 4088)
+  0.22     61.95     0.14                             GetForces (forces.c:70 @ 417c)
+  0.17     62.06     0.11                             Solve1 (solve.c:29 @ 3326)
+  0.16     62.16     0.10                             Solve1 (solve.c:35 @ 35eb)
+  0.16     62.26     0.10                             UpdateNeighbourlist (neighbourlist.c:44 @ 2f59)
+  0.14     62.35     0.09                             GetEnergies (physical.c:104 @ 2b02)
+  0.13     62.43     0.08                             UpdateNeighbourlist (neighbourlist.c:62 @ 31a0)
+  0.11     62.50     0.07                             GetForces (forces.c:42 @ 3e93)
+  0.11     62.57     0.07                             UpdateNeighbourlist (neighbourlist.c:65 @ 31c2)
+  0.10     62.63     0.07                             GetTemperature (physical.c:78 @ 28fa)
+  0.09     62.69     0.06                             Solve1 (solve.c:33 @ 34f0)
+  0.08     62.74     0.05                             Solve1 (solve.c:30 @ 33bc)
+  0.08     62.79     0.05                             Solve1 (solve.c:34 @ 356c)
+  0.06     62.83     0.04                             Solve1 (solve.c:31 @ 3456)
+  0.06     62.87     0.04                             Solve2 (solve.c:81 @ 3ae6)
+  0.05     62.90     0.03                             GetForces (forces.c:30 @ 3db9)
+  0.05     62.93     0.03                             GetForces (forces.c:32 @ 3e10)
+  0.05     62.96     0.03                             Solve2 (solve.c:82 @ 3b65)
+  0.05     62.99     0.03                             Solve2 (solve.c:85 @ 3c2b)
+  0.04     63.01     0.03                             Solve2 (solve.c:80 @ 3a6a)
+  0.03     63.03     0.02                             GetEnergies (physical.c:106 @ 2c29)
+  0.03     63.05     0.02                             GetEnergies (physical.c:103 @ 2c55)
+  0.03     63.07     0.02                             GetForces (forces.c:29 @ 3d9a)
+  0.03     63.09     0.02                             GetForces (forces.c:104 @ 4551)
+  0.03     63.11     0.02                             GetForces (forces.c:37 @ 455f)
+  0.03     63.13     0.02                             Solve1 (solve.c:40 @ 36f9)
+  0.03     63.15     0.02                             Solve1 (solve.c:43 @ 380a)
+  0.03     63.17     0.02                             Solve2 (solve.c:86 @ 3c74)
+  0.02     63.18     0.01                             GetEnergies (physical.c:105 @ 2bfd)
+  0.02     63.19     0.01                             GetForces (forces.c:31 @ 3de4)
+  0.02     63.20     0.01                             GetForces (forces.c:38 @ 3e77)
+  0.02     63.21     0.01                             Solve1 (solve.c:39 @ 366a)
+  0.02     63.22     0.01                             Solve1 (solve.c:42 @ 3778)
+  0.02     63.23     0.01                             Solve2 (solve.c:84 @ 3be4)
+  0.02     63.24     0.01                             main (main.c:160 @ 12f8)
+  0.02     63.25     0.01                             main (main.c:161 @ 1307)
+  0.02     63.26     0.01                             main (main.c:163 @ 13a3)
+  0.01     63.27     0.01                             GetTemperature (physical.c:76 @ 28ee)
+  0.00     63.27     0.00    30001     0.00     0.00  GetTemperature (physical.c:64 @ 28c7)
+  0.00     63.27     0.00    30000     0.00     0.00  GetEnergies (physical.c:97 @ 2a6e)
+  0.00     63.27     0.00    30000     0.00     0.00  GetForces (forces.c:18 @ 3cd1)
+  0.00     63.27     0.00    30000     0.00     0.00  Solve1 (solve.c:13 @ 3282)
+  0.00     63.27     0.00    30000     0.00     0.00  Solve2 (solve.c:61 @ 39b4)
+  0.00     63.27     0.00     6000     0.00     0.00  UpdateNeighbourlist (neighbourlist.c:27 @ 2e9d)
+  0.00     63.27     0.00     1904     0.00     0.00  uniformrand (physical.c:126 @ 2c84)
+  0.00     63.27     0.00     1500     0.00     0.00  gaussianrand (physical.c:155 @ 2d72)
+  0.00     63.27     0.00       31     0.00     0.00  WriteAtoms (inout.c:197 @ 2334)
+  0.00     63.27     0.00        1     0.00     0.00  ReadAtoms (inout.c:152 @ 1fe2)
+  0.00     63.27     0.00        1     0.00     0.00  ReadParams (inout.c:30 @ 15eb)
+  0.00     63.27     0.00        1     0.00     0.00  SetTemperature (physical.c:12 @ 257f)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.02% of 63.27 seconds
+
+index % time    self  children    called     name
+                0.00    0.00       1/30001       main (main.c:109 @ cef) [288]
+                0.00    0.00   30000/30001       main (main.c:130 @ f62) [299]
+[83]     0.0    0.00    0.00   30001         GetTemperature (physical.c:64 @ 28c7) [83]
+-----------------------------------------------
+                0.00    0.00   30000/30000       main (main.c:139 @ 1001) [302]
+[84]     0.0    0.00    0.00   30000         GetEnergies (physical.c:97 @ 2a6e) [84]
+-----------------------------------------------
+                0.00    0.00   30000/30000       main (main.c:127 @ ec1) [298]
+[85]     0.0    0.00    0.00   30000         GetForces (forces.c:18 @ 3cd1) [85]
+-----------------------------------------------
+                0.00    0.00   30000/30000       main (main.c:125 @ e5d) [297]
+[86]     0.0    0.00    0.00   30000         Solve1 (solve.c:13 @ 3282) [86]
+-----------------------------------------------
+                0.00    0.00   30000/30000       main (main.c:132 @ f91) [300]
+[87]     0.0    0.00    0.00   30000         Solve2 (solve.c:61 @ 39b4) [87]
+-----------------------------------------------
+                0.00    0.00    6000/6000        main (main.c:122 @ e03) [296]
+[88]     0.0    0.00    0.00    6000         UpdateNeighbourlist (neighbourlist.c:27 @ 2e9d) [88]
+-----------------------------------------------
+                0.00    0.00     952/1904        gaussianrand (physical.c:161 @ 2d84) [271]
+                0.00    0.00     952/1904        gaussianrand (physical.c:163 @ 2d92) [272]
+[89]     0.0    0.00    0.00    1904         uniformrand (physical.c:126 @ 2c84) [89]
+-----------------------------------------------
+                0.00    0.00     500/1500        SetTemperature (physical.c:34 @ 2619) [201]
+                0.00    0.00     500/1500        SetTemperature (physical.c:35 @ 265a) [202]
+                0.00    0.00     500/1500        SetTemperature (physical.c:36 @ 269c) [203]
+[90]     0.0    0.00    0.00    1500         gaussianrand (physical.c:155 @ 2d72) [90]
+-----------------------------------------------
+                0.00    0.00       1/31          main (main.c:182 @ 1577) [324]
+                0.00    0.00      30/31          main (main.c:150 @ 11d2) [308]
+[91]     0.0    0.00    0.00      31         WriteAtoms (inout.c:197 @ 2334) [91]
+-----------------------------------------------
+                0.00    0.00       1/1           main (main.c:106 @ cb0) [287]
+[92]     0.0    0.00    0.00       1         ReadAtoms (inout.c:152 @ 1fe2) [92]
+-----------------------------------------------
+                0.00    0.00       1/1           main (main.c:98 @ be4) [285]
+[93]     0.0    0.00    0.00       1         ReadParams (inout.c:30 @ 15eb) [93]
+-----------------------------------------------
+                0.00    0.00       1/1           main (main.c:106 @ cb0) [287]
+[94]     0.0    0.00    0.00       1         SetTemperature (physical.c:12 @ 257f) [94]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [84] GetEnergies (physical.c:97 @ 2a6e) [11] GetForces (forces.c:86 @ 42ce) [78] Solve2 (solve.c:84 @ 3be4)
+  [50] GetEnergies (physical.c:104 @ 2b02) [1] GetForces (forces.c:88 @ 42f0) [63] Solve2 (solve.c:85 @ 3c2b)
+  [73] GetEnergies (physical.c:105 @ 2bfd) [7] GetForces (forces.c:92 @ 4323) [72] Solve2 (solve.c:86 @ 3c74)
+  [65] GetEnergies (physical.c:106 @ 2c29) [27] GetForces (forces.c:93 @ 437f) [88] UpdateNeighbourlist (neighbourlist.c:27 @ 2e9d)
+  [66] GetEnergies (physical.c:103 @ 2c55) [17] GetForces (forces.c:94 @ 43d5) [42] UpdateNeighbourlist (neighbourlist.c:43 @ 2f4d)
+  [85] GetForces (forces.c:18 @ 3cd1) [21] GetForces (forces.c:95 @ 4433) [49] UpdateNeighbourlist (neighbourlist.c:44 @ 2f59)
+  [67] GetForces (forces.c:29 @ 3d9a) [24] GetForces (forces.c:96 @ 448b) [3] UpdateNeighbourlist (neighbourlist.c:46 @ 2f65)
+  [60] GetForces (forces.c:30 @ 3db9) [19] GetForces (forces.c:97 @ 44e9) [29] UpdateNeighbourlist (neighbourlist.c:47 @ 2fb0)
+  [74] GetForces (forces.c:31 @ 3de4) [22] GetForces (forces.c:42 @ 4541) [20] UpdateNeighbourlist (neighbourlist.c:48 @ 2fdb)
+  [61] GetForces (forces.c:32 @ 3e10) [68] GetForces (forces.c:104 @ 4551) [4] UpdateNeighbourlist (neighbourlist.c:50 @ 300e)
+  [75] GetForces (forces.c:38 @ 3e77) [69] GetForces (forces.c:37 @ 455f) [25] UpdateNeighbourlist (neighbourlist.c:51 @ 305b)
+  [52] GetForces (forces.c:42 @ 3e93) [83] GetTemperature (physical.c:64 @ 28c7) [15] UpdateNeighbourlist (neighbourlist.c:52 @ 3086)
+  [18] GetForces (forces.c:44 @ 3e9f) [82] GetTemperature (physical.c:76 @ 28ee) [5] UpdateNeighbourlist (neighbourlist.c:54 @ 30b9)
+   [6] GetForces (forces.c:47 @ 3ec0) [54] GetTemperature (physical.c:78 @ 28fa) [39] UpdateNeighbourlist (neighbourlist.c:55 @ 3106)
+  [23] GetForces (forces.c:48 @ 3f14) [92] ReadAtoms (inout.c:152 @ 1fe2) [37] UpdateNeighbourlist (neighbourlist.c:56 @ 3131)
+  [26] GetForces (forces.c:49 @ 3f42) [93] ReadParams (inout.c:30 @ 15eb) [10] UpdateNeighbourlist (neighbourlist.c:58 @ 3164)
+  [13] GetForces (forces.c:51 @ 3f78) [94] SetTemperature (physical.c:12 @ 257f) [12] UpdateNeighbourlist (neighbourlist.c:60 @ 3190)
+  [34] GetForces (forces.c:52 @ 3fce) [86] Solve1 (solve.c:13 @ 3282) [40] UpdateNeighbourlist (neighbourlist.c:61 @ 319c)
+  [32] GetForces (forces.c:53 @ 3ffc) [47] Solve1 (solve.c:29 @ 3326) [51] UpdateNeighbourlist (neighbourlist.c:62 @ 31a0)
+   [8] GetForces (forces.c:55 @ 4032) [56] Solve1 (solve.c:30 @ 33bc) [44] UpdateNeighbourlist (neighbourlist.c:63 @ 31a4)
+  [45] GetForces (forces.c:56 @ 4088) [58] Solve1 (solve.c:31 @ 3456) [53] UpdateNeighbourlist (neighbourlist.c:65 @ 31c2)
+  [38] GetForces (forces.c:57 @ 40b6) [55] Solve1 (solve.c:33 @ 34f0) [36] UpdateNeighbourlist (neighbourlist.c:67 @ 31cc)
+  [31] GetForces (forces.c:59 @ 40ec) [57] Solve1 (solve.c:34 @ 356c) [43] UpdateNeighbourlist (neighbourlist.c:44 @ 31ef)
+  [30] GetForces (forces.c:61 @ 4118) [48] Solve1 (solve.c:35 @ 35eb) [41] UpdateNeighbourlist (neighbourlist.c:43 @ 31f0)
+  [16] GetForces (forces.c:65 @ 4128) [76] Solve1 (solve.c:39 @ 366a) [91] WriteAtoms (inout.c:197 @ 2334)
+   [2] GetForces (forces.c:69 @ 413f) [70] Solve1 (solve.c:40 @ 36f9) [90] gaussianrand (physical.c:155 @ 2d72)
+  [46] GetForces (forces.c:70 @ 417c) [77] Solve1 (solve.c:42 @ 3778) [79] main (main.c:160 @ 12f8)
+   [9] GetForces (forces.c:73 @ 418a) [71] Solve1 (solve.c:43 @ 380a) [80] main (main.c:161 @ 1307)
+  [14] GetForces (forces.c:74 @ 41bd) [87] Solve2 (solve.c:61 @ 39b4) [81] main (main.c:163 @ 13a3)
+  [33] GetForces (forces.c:75 @ 41f8) [64] Solve2 (solve.c:80 @ 3a6a) [89] uniformrand (physical.c:126 @ 2c84)
+  [35] GetForces (forces.c:80 @ 422d) [59] Solve2 (solve.c:81 @ 3ae6)
+  [28] GetForces (forces.c:83 @ 427c) [62] Solve2 (solve.c:82 @ 3b65)
