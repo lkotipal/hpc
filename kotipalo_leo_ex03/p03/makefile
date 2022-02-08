@@ -1,9 +1,9 @@
 CC=gcc
 CFLAGS=-std=c17 -g
-OPT=
+OPT?=0
 
-ex3p3: ex3p3.c
-	$(CC) -o ex3p3.exe ex3p3.c $(CFLAGS) $(OPT)
+ex3p3: ex3p3.c clean
+	$(CC) -o ex3p3.exe ex3p3.c $(CFLAGS) -O$(OPT)
 
 clean:
 	rm -f *.o *.exe
