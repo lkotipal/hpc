@@ -6,7 +6,7 @@
 
 void write_file(int n)
 {
-	std::ofstream out_file{"out_04.txt"};
+	std::ofstream out_file{"temp.txt"};
 	for (int k = 0; k <= n; ++k)
 		if (out_file.is_open())
 			out_file << k << std::exp(std::sin(static_cast<double>(k) / 100'000)) << std::endl;
@@ -18,7 +18,7 @@ double read_file()
 	double sum = 0;
 	int k = 0;
 	double a_k = 0;
-	std::ifstream in_file("out_04.txt");
+	std::ifstream in_file("temp.txt");
 	while (in_file >> k >> a_k){
 		sum += a_k;
 	}
