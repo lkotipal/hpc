@@ -1,1 +1,1 @@
-2.56429e+07 calculated in 5.346s CPU time, 5.34685s walltime.
+39782.6 calculated in 0.982523s CPU time, 1.99542s walltime.
