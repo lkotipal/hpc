@@ -20,6 +20,7 @@ double read_file()
 	double a_k = 0;
 	std::ifstream in_file("temp.txt");
 	while (in_file >> k >> a_k){
+		std::clog << a_k << std::endl;
 		sum += a_k;
 	}
 	return sum;
@@ -30,7 +31,7 @@ int main()
 	auto start_wall = std::chrono::system_clock::now();
 	auto start_cpu = std::clock();
 
-	write_file(1'000'000);
+	write_file(100'000);
 	double sum = read_file();
 
 	auto end_cpu = std::clock();
