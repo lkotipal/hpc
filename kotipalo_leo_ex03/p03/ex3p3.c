@@ -9,7 +9,6 @@ void main() {
   int i,j;
   clock_t t1,t2;
 
-
   /* Begin measurement */
   t1 = clock();
   for (i=0;i<N;i++) 
@@ -19,10 +18,9 @@ void main() {
   /* End measurement */
 
 
-  for (i=0;i<N;i+=10000) for (j=0;j<N;j+=10000) printf("%d ",a[i][j]);
-  printf("\n");
-  printf("%f s elapsed \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC);
-
+  //for (i=0;i<N;i+=10000) for (j=0;j<N;j+=10000) printf("%d ",a[i][j]);
+  //printf("\n");
+  printf("%f\n", ((double) (t2 - t1)) / CLOCKS_PER_SEC);
 }
 
 
