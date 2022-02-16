@@ -34,5 +34,6 @@
 #
 *.tgz
 *.pdf
+*.png
 .vscode/
 kotipalo_leo_ex03/p04/temp.txt
