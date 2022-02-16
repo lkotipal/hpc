@@ -44,5 +44,5 @@ int main(int argc, char *argv[])
 	// A * B^T
 	double t3 = multiply(a, b, false, true);
 
-	std::cout << t1 << "\t" << t2 << "\t" << t3 << std::endl;
+	std::cout << std::fixed << t1 << "\t" << t2 << "\t" << t3 << std::endl;
 }

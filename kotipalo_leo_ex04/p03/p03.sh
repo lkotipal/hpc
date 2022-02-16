@@ -2,5 +2,5 @@
 
 for i in {1..100}
 do
-	./$1.exe $2
+	./main.exe
 done

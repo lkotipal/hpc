@@ -38,10 +38,10 @@ int main(int argc, char *argv[])
 	std::mt19937 rng; // Default seed for consistency
 	std::uniform_real_distribution<> dis;
 	for (auto& i : b)
-		for (double& j : i)
-			j = dis(rng);
-	for (double& i : c)
-		i = dis(rng);
+		for (double& d : i)
+			d = dis(rng);
+	for (double& d : c)
+		d = dis(rng);
 	
 	double t = calculate_unoptimized(a, b, c);
 	std::clog << a[n-1][n-1] << std::endl;
@@ -49,5 +49,5 @@ int main(int argc, char *argv[])
 	double t_opt = calculate_optimized(a, b, c);
 	std::clog << a[n-1][n-1] << std::endl;
 
-	std::cout << t << "\t" << t_opt << std::endl;
+	std::cout << std::fixed << t << "\t" << t_opt << std::endl;
 }

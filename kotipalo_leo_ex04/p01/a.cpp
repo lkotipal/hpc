@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
 	// Populate arrays
 	std::mt19937 rng; // Default seed for consistency
 	std::uniform_real_distribution<> dis;
-	for (double& i : b)
-		i = dis(rng);
+	for (double& d : b)
+		d = dis(rng);
 	
 	double t = calculate_unoptimized(a, b);
 	std::clog << a[n-2] << std::endl;
@@ -48,5 +48,5 @@ int main(int argc, char *argv[])
 	double t_opt = calculate_optimized(a, b);
 	std::clog << a[n-2] << std::endl;
 
-	std::cout << t << "\t" << t_opt << std::endl;
+	std::cout << std::fixed << t << "\t" << t_opt << std::endl;
 }
