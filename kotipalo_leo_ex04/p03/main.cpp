@@ -6,45 +6,36 @@
 template <size_t n>
 double unroll_1(std::array<double, n>& a)
 {
-	auto start = std::chrono::steady_clock::now();
-
+	auto start = std::clock();
 	double prod = 1.0;
 	for (int i = 0; i < n; ++i)
 	{
 		prod *= a[i];
 	}
-
-	auto end = std::chrono::steady_clock::now();
+	auto end = std::clock();
 	std::clog << prod << std::endl;
-
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 template <size_t n>
 double unroll_2(std::array<double, n>& a)
 {
-	auto start = std::chrono::steady_clock::now();
-
+	auto start = std::clock();
 	double prod = 1.0;
 	for (int i = 0; i < n; i += 2)
 	{
 		prod *= a[i];
 		prod *= a[i+1];
 	}
-
-	auto end = std::chrono::steady_clock::now();
+	auto end = std::clock();
 	std::clog << prod << std::endl;
-
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 template <size_t n>
 double unroll_4(std::array<double, n>& a)
 {
-	auto start = std::chrono::steady_clock::now();
-
+	auto start = std::clock();
 	double prod = 1.0;
 	for (int i = 0; i < n; i += 4)
 	{
@@ -53,19 +44,15 @@ double unroll_4(std::array<double, n>& a)
 		prod *= a[i+2];
 		prod *= a[i+3];
 	}
-
-	auto end = std::chrono::steady_clock::now();
+	auto end = std::clock();
 	std::clog << prod << std::endl;
-
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 template <size_t n>
 double unroll_8(std::array<double, n>& a)
 {
-	auto start = std::chrono::steady_clock::now();
-
+	auto start = std::clock();
 	double prod = 1.0;
 	for (int i = 0; i < n; i += 8)
 	{
@@ -78,19 +65,15 @@ double unroll_8(std::array<double, n>& a)
 		prod *= a[i+6];
 		prod *= a[i+7];
 	}
-
-	auto end = std::chrono::steady_clock::now();
+	auto end = std::clock();
 	std::clog << prod << std::endl;
-
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 template <size_t n>
 double unroll_16(std::array<double, n>& a)
 {
-	auto start = std::chrono::steady_clock::now();
-
+	auto start = std::clock();
 	double prod = 1.0;
 	for (int i = 0; i < n; i += 16)
 	{
@@ -111,19 +94,15 @@ double unroll_16(std::array<double, n>& a)
 		prod *= a[i+14];
 		prod *= a[i+15];
 	}
-
-	auto end = std::chrono::steady_clock::now();
+	auto end = std::clock();
 	std::clog << prod << std::endl;
-
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 template <size_t n>
 double unroll_32(std::array<double, n>& a)
 {
-	auto start = std::chrono::steady_clock::now();
-
+	auto start = std::clock();
 	double prod = 1.0;
 	for (int i = 0; i < n; i += 32)
 	{
@@ -160,12 +139,9 @@ double unroll_32(std::array<double, n>& a)
 		prod *= a[i+30];
 		prod *= a[i+31];
 	}
-
-	auto end = std::chrono::steady_clock::now();
+	auto end = std::clock();
 	std::clog << prod << std::endl;
-
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 int main(int argc, char *argv[])

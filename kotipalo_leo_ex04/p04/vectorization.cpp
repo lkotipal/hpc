@@ -1,6 +1,6 @@
 //Hello Antti, // //Please find the example code from below. // //Cheers, //Xin #include <iostream>
 
-#include <time.h>
+#include <ctime>
 #include <iostream>
 #include <string>
 
@@ -21,25 +21,25 @@ int main(int argc, char *argv[]) {
   int *f = new int [n2];
   clock_t v1, v2;
   /*---------Initialize vectors---------*/
-  v1 = clock();
+  v1 = std::clock();
   for (int i=0; i<n2; i++) {
     d[i] = 5;
     e[i] = 5 + 3;
     f[i] = 0;
   }
-  v2 = clock();
+  v2 = std::clock();
   //std::cout << "Initialize vector: \t" << static_cast<double>(v2-v1)/CLOCKS_PER_SEC << std::endl;
   clock_t v3, v4;
   /*---------f = d * e (repeat)---------*/
-  v3 = clock();
+  v3 = std::clock();
   for (int i=0; i<n3; i++) {
     for (int j=0; j<n2; j++) {
       f[j] = d[j] * e[j];
     }
   }
-  v4 = clock();
+  v4 = std::clock();
   //std::cout << "de(repeat): \t" << static_cast<double>(v4-v3)/CLOCKS_PER_SEC << std::endl;
-  std::cout << static_cast<double>(v2-v1) << "\t" << static_cast<double>(v4-v3) << std::endl;
+  std::cout << std::fixed << static_cast<double>(v2-v1)/CLOCKS_PER_SEC << "\t" << static_cast<double>(v4-v3)/CLOCKS_PER_SEC << std::endl;
   delete[] d;
   delete[] e;
   delete[] f;

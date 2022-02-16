@@ -6,28 +6,26 @@
 template <size_t n>
 double calculate_unoptimized(std::array<double, n>& a, const std::array<double, n>& b)
 {
-	auto start = std::chrono::steady_clock::now();
+	auto start = std::clock();
 	for (int i = 0; i < n - 1; ++i)
 		if (i < 499)	// Off by one compared to Fortran ver
 			a[i] = 4.0 * b[i] + b[i+1];
 		else
 			a[i] = 4.0 * b[i+1] + b[i];
-	auto end = std::chrono::steady_clock::now();
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	auto end = std::clock();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 template <size_t n>
 double calculate_optimized(std::array<double, n>& a, const std::array<double, n>& b)
 {
-	auto start = std::chrono::steady_clock::now();
+	auto start = std::clock();
 	for (int i = 0; i < 499; ++i)
 		a[i] = 4.0 * b[i] + b[i+1];
 	for (int i = 499; i < n - 1; ++i)
 		a[i] = 4.0 * b[i+1] + b[i];
-	auto end = std::chrono::steady_clock::now();
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	auto end = std::clock();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 int main(int argc, char *argv[])

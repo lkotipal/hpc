@@ -6,25 +6,23 @@
 template <size_t n>
 double calculate_unoptimized(std::array<std::array<double, n>, n>& a, const std::array<std::array<double, n>, n>& b, const std::array<double, n>& c)
 {
-	auto start = std::chrono::steady_clock::now();
+	auto start = std::clock();
 	for (int j = 0; j < n; ++j)
 		for (int i = 0; i < n; ++i)
 			a[i][j] = b[i][j] / c[i];
-	auto end = std::chrono::steady_clock::now();
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	auto end = std::clock();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 template <size_t n>
 double calculate_optimized(std::array<std::array<double, n>, n>& a, const std::array<std::array<double, n>, n>& b, const std::array<double, n>& c)
 {
-	auto start = std::chrono::steady_clock::now();
+	auto start = std::clock();
 	for (int i = 0; i < n; ++i)
 		for (int j = 0; j < n; ++j)
 			a[i][j] = b[i][j] / c[i];
-	auto end = std::chrono::steady_clock::now();
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	auto end = std::clock();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 int main(int argc, char *argv[])

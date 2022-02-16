@@ -6,8 +6,7 @@
 template <int n>
 double multiply(Matrix<n>& a, Matrix<n>& b, bool transpose_a, bool transpose_b)
 {
-	auto start = std::chrono::steady_clock::now();
-
+	auto start = std::clock();
 	if (transpose_a)
 		a.transpose();
 	if (transpose_b)
@@ -17,10 +16,8 @@ double multiply(Matrix<n>& a, Matrix<n>& b, bool transpose_a, bool transpose_b)
 		a.transpose();
 	if (transpose_b)
 		b.transpose();
-
-	auto end = std::chrono::steady_clock::now();
-	std::chrono::duration<double> seconds = end - start;
-	return seconds.count();
+	auto end = std::clock();
+	return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
 int main(int argc, char *argv[])
