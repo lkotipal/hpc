@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-std=c++20 -Wl,--stack,0x10000000
+CFLAGS=-std=c++20
 OPT?=0
 SRC=matrix.hpp
 
