@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-std=c++20 -O2 -g -Wl,--stack,0x10000000
+CFLAGS=-std=c++20 -O2
 
 target: a b
 
