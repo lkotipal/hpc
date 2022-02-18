@@ -15,7 +15,8 @@ b4 = np.loadtxt('vectorize_1000.tsv', unpack=True)[1]
 b = np.stack((b1, b2, b3, b4))
 
 (_, minmax, mean, var, _, _) = describe(a, axis=1)
-plt.errorbar([1, 10, 100, 1000], mean, np.sqrt(var))
+plt.errorbar([1, 10, 100, 1000], mean, np.sqrt(var), capsize=2.0, label='fno-tree-vectorize')
 (_, minmax, mean, var, _, _) = describe(b, axis=1)
-plt.errorbar([1, 10, 100, 1000], mean, np.sqrt(var))
+plt.errorbar([1, 10, 100, 1000], mean, np.sqrt(var), capsize=2.0, label='ftree-vectorize')
+plt.legend()
 plt.savefig('p04.png')
