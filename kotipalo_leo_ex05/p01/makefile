@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-std=c++20 -Wl,--stack,0x100000000
+CFLAGS=-std=c++20
 SRC=
 
 main: main.cpp $(SRC)
