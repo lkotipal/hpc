@@ -14,6 +14,6 @@ module load openmpi4
 
 echo -e "\n=== Run started $(date) on $HOSTNAME ===\n"
 
-mpirun -np 2 ./mpiexample.exe testing1 testing2 &> mpiexample.out
+mpirun -np 2 ./mpiexample.exe testing1 testing2 > mpiexample.out
 
 echo -e "\n=== Run finished $(date) $HOSTNAME ===\n"
