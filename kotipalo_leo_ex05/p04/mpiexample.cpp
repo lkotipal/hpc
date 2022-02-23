@@ -19,7 +19,7 @@ int main(int argc,char *argv[])
 	rc=MPI_Get_processor_name(pname,&pnlen);
 
 	if (id == 0) {
-		std::cout << id << ": " << (*msg) << std::endl;
+		std::cout << id << ": " << *msg << std::endl;
 		rc=MPI_Send(msg, 1, MPI_INT, 1, tag, MPI_COMM_WORLD);
 		rc=MPI_Recv(msg, 1, MPI_INT, 1, tag, MPI_COMM_WORLD, &status);
 		std::cout << id << ": " << ++(*msg) << std::endl;
@@ -34,6 +34,9 @@ int main(int argc,char *argv[])
 		std::cout << id << ": " << ++(*msg) << std::endl;
 		rc=MPI_Send(msg, 1, MPI_INT, 0, tag, MPI_COMM_WORLD);
 	}
+
+	if (id == 0)
+		std::cout << std::endl << "Final value: " << *msg << std::endl;
 
 	rc=MPI_Finalize();
 	exit(0);
