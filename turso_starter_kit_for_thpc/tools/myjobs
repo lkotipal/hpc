@@ -1,0 +1,11 @@
+#! /bin/bash
+
+if [ $# -eq 0 ]; then
+    cluster="vorna"
+else
+    cluster=$1
+fi
+
+
+squeue -M $cluster -o "%7i %14P %20j %8u %12T %12M %9l %.6D %.R  %.10C" -u ${USER}
+

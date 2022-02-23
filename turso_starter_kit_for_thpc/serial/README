@@ -1,0 +1,30 @@
+
+
+---------------------------------------------------------------------
+
+   This is a simple example to demonstrate serial runs on
+   turso cluster.
+
+       A.Kuronen, antti.kuronen@helsinki.fi, 6.2.2022
+
+---------------------------------------------------------------------
+
+
+Compile and link:
+	module load intel
+	icc -o serialexample serialexample.c  or  ifort -o serialexample serialexample.f90
+
+
+Send the batch job for execution:
+	sbatch submit_serial
+
+
+Check out the progress of your job:
+	squeue  or  squeue -u <username>
+
+
+Ouput goes to files 'out_<job#>' and 'serialexample.out'.  Check
+folder 'reference_output' for output of an example of a successful
+run.
+
+

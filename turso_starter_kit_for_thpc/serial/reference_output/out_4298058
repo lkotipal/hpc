@@ -1,0 +1,18 @@
+
+=== Run started Wed  5 Feb 11:28:22 EET 2020 on kag01 ===
+
+
+The following have been reloaded with a version change:
+  1) GCCcore/6.4.0 => GCCcore/8.2.0
+  2) binutils/2.28-GCCcore-6.4.0 => binutils/2.31.1-GCCcore-8.2.0
+  3) icc/2018.3.222-GCC-6.4.0-2.28 => icc/2019.1.144-GCC-8.2.0-2.31.1
+  4) iccifort/2018.3.222-GCC-6.4.0-2.28 => iccifort/2019.1.144-GCC-8.2.0-2.31.1
+  5) ifort/2018.3.222-GCC-6.4.0-2.28 => ifort/2019.1.144-GCC-8.2.0-2.31.1
+  6) iimpi/2018.03 => iimpi/2019a
+  7) imkl/2018.3.222-iimpi-2018.03 => imkl/2019.1.144-iimpi-2019a
+  8) impi/2018.3.222-iccifort-2018.3.222-GCC-6.4.0-2.28 => impi/2018.4.274-iccifort-2019.1.144-GCC-8.2.0-2.31.1
+  9) intel/2018.03 => intel/2019a
+
+
+=== Run finished Wed  5 Feb 11:28:24 EET 2020 kag01 ===
+
