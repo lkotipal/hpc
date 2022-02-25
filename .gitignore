@@ -36,3 +36,9 @@
 *.png
 .vscode/
 kotipalo_leo_ex03/p04/temp.txt
+gmon.out
+
+kotipalo_leo_ex06/p01/lapackf90
+kotipalo_leo_ex03/p02/mdmorse/c/atoms.out
+kotipalo_leo_ex05/p01/temp.bin
+kotipalo_leo_ex06/p01/evalues.datc
