@@ -34,33 +34,33 @@ int main(int argc,char *argv[])
 	}
 	if (id == 0) {
 		std::clog << "Using n = " << n << std::endl;
-		std::clog << "Message size " << n * sizeof(int) << std::endl;
+		std::clog << "Message size " << n * sizeof(char) << std::endl << std::endl;
 	}
 
 	int other_id = id ? 0 : 1;
-	std::vector<int> msg(n); 
+	std::vector<char> msg(n); 
 	double start, stop;
 	if (id == 0) {
 		start = MPI_Wtime();
-		rc=MPI_Send(msg.data(), n, MPI_INT, other_id, tag, MPI_COMM_WORLD);
+		rc=MPI_Send(msg.data(), n, MPI_CHAR, other_id, tag, MPI_COMM_WORLD);
 	}
 
 	std::cout << std::scientific;
 	if (id < 2) {
 		constexpr int loops = 1'000;
 		for (int i = 0; (id && i < loops) || (id == 0 && i < loops - 1); ++i) {
-			rc=MPI_Recv(msg.data(), n, MPI_INT, other_id, tag, MPI_COMM_WORLD, &status);
+			rc=MPI_Recv(msg.data(), n, MPI_CHAR, other_id, tag, MPI_COMM_WORLD, &status);
 			if (id == 0) {
 				stop = MPI_Wtime();
 				std::cout << stop - start << std::endl;
 				start = stop;
 			}
-			rc=MPI_Send(msg.data(), n, MPI_INT, other_id, tag, MPI_COMM_WORLD);
+			rc=MPI_Send(msg.data(), n, MPI_CHAR, other_id, tag, MPI_COMM_WORLD);
 		}
 	}
 
 	if (id == 0) {
-		rc=MPI_Recv(msg.data(), n, MPI_INT, other_id, tag, MPI_COMM_WORLD, &status);
+		rc=MPI_Recv(msg.data(), n, MPI_CHAR, other_id, tag, MPI_COMM_WORLD, &status);
 		stop = MPI_Wtime();
 		std::cout << stop - start << std::endl;
 	}
