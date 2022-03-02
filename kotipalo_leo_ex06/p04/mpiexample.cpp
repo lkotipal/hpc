@@ -32,8 +32,10 @@ int main(int argc,char *argv[])
 				std::clog << "n must be a positive integer." << std::endl;
 		}
 	}
-	if (id == 0)
+	if (id == 0) {
 		std::clog << "Using n = " << n << std::endl;
+		std::clog << "Message size " << n * sizeof(int) << std::endl;
+	}
 
 	int other_id = id ? 0 : 1;
 	std::vector<int> msg(n); 
