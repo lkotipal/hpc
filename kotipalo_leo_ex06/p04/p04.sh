@@ -1,8 +1,6 @@
 #!/bin/bash
 
-x=1
-for i in {0..28}
+for i in {0..50}
 do
-	mpirun -np 2 mpiexample.exe $x > p04_$x.tsv
-	x=`expr 2 \* $x`
+	mpirun -np 2 mpiexample.exe `expr 2000000 \* $i` > p04_$i.tsv
 done
