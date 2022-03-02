@@ -72,9 +72,9 @@ int main(int argc, char *argv[])
   
   /* ---- The eigenvalue calculation proper ---- */
 
-  time_t t1 = time(NULL);
+  clock_t t1 = clock();
   dgeev_(&jobvl,&jobvr, &n, A, &n,  wr, wi, vl, &n,   vr, &n,   work, &lwork, &info);
-  time_t t2 = time(NULL);
+  clock_t t2 = clock();
 
   /* Print eigenvalues to file "evalues.datc" */
 

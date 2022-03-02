@@ -2,5 +2,5 @@
 
 for i in {1..100}
 do
-	./eigendouble.exe $1 1
+	./eigendouble.exe $1 $i
 done
