@@ -11,4 +11,4 @@ b: omit_frame_pointer.f90
 	$(CC) -o b.exe omit_frame_pointer.f90 $(CFLAGS) -O$(OPT) -fomit-frame-pointer
 
 clean:
-	rm -f *.o *.exe
+	rm -f *.o *.exe *.mod

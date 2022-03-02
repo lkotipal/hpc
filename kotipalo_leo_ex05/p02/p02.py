@@ -2,13 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import describe
 
-O0 = np.loadtxt('O0.tsv')
-O3 = np.loadtxt('O3.tsv')
+a = np.stack(
+	(
+		np.loadtxt('no-omit-0.tsv', unpack=True)[1], 
+		np.loadtxt('omit-0.tsv', unpack=True)[1], 
+		np.loadtxt('no-omit-1.tsv', unpack=True)[1],
+		np.loadtxt('omit-1.tsv', unpack=True)[1], 
+		np.loadtxt('no-omit-2.tsv', unpack=True)[1],
+		np.loadtxt('omit-2.tsv', unpack=True)[1], 
+	)
+).transpose()
 
 plt.figure()
-(_, minmax, mean, var, _, _) = describe(O0)
-plt.bar(['1, 0', '2, 0', '4, 0', '8, 0', '16, 0', '32, 0'], mean, yerr=np.sqrt(var))
-(_, minmax, mean, var, _, _) = describe(O3)
-plt.bar(['1, 3', '2, 3', '4, 3', '8, 3', '16, 3', '32, 3'], mean, yerr=np.sqrt(var))
-plt.ylim(0.7, 1)
-plt.savefig("p03.png")
+(_, _, mean, var, _, _) = describe(a)
+plt.bar(['no-omit, O0', 'omit, O0', 'no-omit, O1', 'omit, O1', 'no-omit, O2', 'omit, O2',], mean, yerr=np.sqrt(var))
+plt.ylabel(r'$t (s)$')
+plt.savefig("p02.png")
