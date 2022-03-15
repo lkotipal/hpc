@@ -1,0 +1,2 @@
+Average:	0.018565
+Variance:	4.00275
