@@ -7,7 +7,7 @@ x = np.linspace(0, 1E8, 51)
 y = np.zeros(51)
 yerr = np.zeros(51)
 for i in range(51):
-	a = np.loadtxt(f'times_{i}.tsv')
+	a = np.loadtxt(f'times_{i}.tsv') / 2	# This is ping, so halve for one-way
 	(_, _, y[i], var, _, _) = describe(a)
 	yerr[i] = np.sqrt(var)
 
