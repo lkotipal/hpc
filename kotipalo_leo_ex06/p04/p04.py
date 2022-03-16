@@ -15,7 +15,7 @@ for i in range(51):
 (b_err, l_err) = np.sqrt(np.diag(pcov))
 print(f'b = {b:e} +- {b_err:e} B/s')
 print(f'l = {l} +- {l_err} s')
-plt.errorbar(x, y, yerr, fmt=' ', capsize=2.0)
+plt.errorbar(x, y, yerr, fmt='.', capsize=2.0)
 plt.plot(x, x/b + l)
 plt.xlabel(f'$N$ (B)')
 plt.ylabel(f'$t$ (s)')

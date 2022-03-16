@@ -17,7 +17,7 @@ for i in range(8):
 print(f'a = {a}')
 print(f'b = {b}')
 
-plt.errorbar(x, y, yerr, fmt=' ', capsize=2.0, label='Data')
+plt.errorbar(x, y, yerr, fmt='.', capsize=2.0, label='Data')
 plt.plot(x, a * x**b, label=f'$a \cdot N^b$')
 plt.legend()
 plt.xscale('log', base=10)
