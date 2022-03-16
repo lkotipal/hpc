@@ -15,12 +15,6 @@ int main(int argc,char *argv[])
 	}
 	MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
 
-	if (ntasks & ntasks - 1) {
-		std::clog << "ntasks must be power of 2" << std::endl;
-		MPI_Finalize();
-		exit(0);
-	}
-
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
 
 	int msg{id};
@@ -53,7 +47,7 @@ int main(int argc,char *argv[])
 				if ((i & i - 1) == 0) {
 					// Power of 2, gather from all even numbers up to next power
 					if (id == i) {
-						for (int j = i + 2; j < i * 2; j += 2) {
+						for (int j = i + 2; j < i * 2 && j < ntasks; j += 2) {
 							count_recv[j] = 1;
 							displacements[j] = count_receive++;
 						}
@@ -62,10 +56,6 @@ int main(int argc,char *argv[])
 					}
 				}
 			}
-			if (count_receive)
-				std::cout << i << " receiving " << count_receive << std::endl;
-			if (count_send)
-				std::cout << id << " sending " << msg << " to " << i << std::endl;
 			std::vector<int> buffer_recv(count_receive);
 			MPI_Gatherv(&msg, count_send, MPI_INT, buffer_recv.data(), count_recv.data(), displacements.data(), MPI_INT, i, MPI_COMM_WORLD);
 

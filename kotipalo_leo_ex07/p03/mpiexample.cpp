@@ -54,12 +54,14 @@ int main(int argc,char *argv[])
 
 	if (id == 0) {
 		for (int i = 1; i < ntasks; ++i) {
+			// Might have numeric instabilities
 			sum += sums[i];
 			square_sum += square_sums[i];
 		}
 
 		double mean = sum / file_nums.size();
 		std::cout << "Average:\t" << mean << std::endl;
+		// Population variance, without Bessel correction
 		std::cout << "Variance:\t" << square_sum / file_nums.size() - mean * mean << std::endl;
 	}
 
