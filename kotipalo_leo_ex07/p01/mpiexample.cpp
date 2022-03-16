@@ -22,8 +22,9 @@ int main(int argc,char *argv[])
 	} else {
 		for (int i = 0; i < (ntasks-1)*100; ++i) {
 			MPI_Recv(&msg, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-			std::cout << msg << std::endl;
+			std::cout << msg << "\t";
 		}
+		std::cout << std::endl;
 	}
 
 	MPI_Finalize();
