@@ -56,9 +56,10 @@ int main(int argc,char *argv[])
 	if (id == 0) {
 		for (int i = 1; i < ntasks; ++i) {
 			double delta = means[i] - my_mean;
-			my_mean += delta * counts[i] / (my_n + counts[i]);
-			my_square_sum += square_sums[i] + delta * delta * (my_n * counts[i]) / (my_n + counts[i]);
-			my_n += counts[i];
+			int new_n = my_n + counts[i];
+			my_mean = (my_n * my_mean + counts[i] * means[i]) / (new_n);
+			my_square_sum += square_sums[i] + delta * delta * (my_n * counts[i]) / (new_n);
+			my_n = new_n;
 		}
 
 		std::cout << "Average:\t" << my_mean << std::endl;
