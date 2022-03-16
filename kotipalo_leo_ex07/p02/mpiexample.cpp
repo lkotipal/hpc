@@ -18,7 +18,7 @@ int main(int argc,char *argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
 
 	constexpr int N = 1'000'000;
-	Rejection_sampler rs{id};
+	Rejection_sampler rs{static_cast<std::uint_fast32_t>(std::pow(7, id))};
 
 	double p = rs.integrate(N);
 	std::vector<double> ps(id ? 0 : ntasks);
