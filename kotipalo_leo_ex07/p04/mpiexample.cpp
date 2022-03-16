@@ -16,6 +16,10 @@ int main(int argc,char *argv[])
 	MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
 
+	if (id == 0) {
+		std::cout << "Running " << ntasks << " processes" << std::endl;
+	}
+
 	int msg{id};
 	int buf{0};
 	if (id == 0) {
