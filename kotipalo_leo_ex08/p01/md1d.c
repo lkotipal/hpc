@@ -63,17 +63,15 @@ int main(int argc, char **argv)
   double *ep;            //      potential energies
   double *ek;            //      kinetic energies
 
-  double epsum,eksum;    // system energies
   double dt;             // time step 
   double vsc;            // mean initial velocity
   double box;            // system size
-  int nat_total;         // total number of atoms
-  int nat;               // number of atoms
+  int total_nat;         // number of atoms
+  int my_nat;            // number of atoms in process
   int maxt;              // number of time steps simulated
   int eout;              // energy output interval
   int cout;              // coordinate output interval (lot of data, beware!)
   
-  int i,n;
   double vsum,vave;
 
 	const int tag=50;
@@ -96,10 +94,20 @@ int main(int argc, char **argv)
     fprintf(stderr,"    vsc = mean velocity of atoms in the beginning ('temperature')\n");
     fprintf(stderr,"    eout = interval for printing energies to stdout\n");
     fprintf(stderr,"    cout = interval for printing coordinates to 'coords.dat'\n");
-    return(-1);
+
+    MPI_Finalize();
+    return -1;
   }
   
-  nat = atoi(argv[1]);
+  total_nat = atoi(argv[1]);
+
+  if (total_nat % ntasks) {
+    fprintf(stderr,"nat must be divisble by ntasks\n");
+    MPI_Finalize();
+    return -1;
+  }
+  my_nat = total_nat / ntasks;
+  
   dt = atof(argv[2]);
   maxt = atoi(argv[3]);
   vsc = atof(argv[4]);
@@ -107,78 +115,84 @@ int main(int argc, char **argv)
   eout = argc > 5 ? atoi(argv[5]) : 1;
   cout = argc > 6 ? atoi(argv[6]) : 0;
   
-  x = (double*) malloc((size_t) nat * sizeof(double));
-  v = (double*) malloc((size_t) nat * sizeof(double));
-  v0 = (double*) malloc((size_t) nat * sizeof(double));
-  a = (double*) malloc((size_t) nat * sizeof(double));
-  ep = (double*) malloc((size_t) nat * sizeof(double));
-  ek = (double*) malloc((size_t) nat * sizeof(double));
+  x = (double*) malloc((size_t) my_nat * sizeof(double));
+  v = (double*) malloc((size_t) my_nat * sizeof(double));
+  v0 = (double*) malloc((size_t) my_nat * sizeof(double));
+  a = (double*) malloc((size_t) my_nat * sizeof(double));
+  ep = (double*) malloc((size_t) my_nat * sizeof(double));
+  ek = (double*) malloc((size_t) my_nat * sizeof(double));
   
   // Initialize atoms positions and give them random velocities
-  box=nat;
+  box=my_nat;
   srand(time(NULL));
-  for (i=0;i<nat;i++) {
-    x[i]=i;
-    v[i]=vsc*(double)rand()/RAND_MAX;
+  for (int i = 0; i<my_nat; i++) {
+    x[i] = i;
+    v[i] = vsc * (double) rand() / RAND_MAX;
   }
 
   if (cout>0) 
     fd=fopen("coords.dat","w");
   
   // Remove center of mass velocity
-  vsum=0.0;
-  for (i=0;i<nat;i++) 
-    vsum+=v[i];
-  vsum/=nat;
-  for (i=0;i<nat;i++) 
-    v[i]-=vsum;
+  vsum = 0.0;
+  for (int i = 0; i < my_nat; i++) 
+    vsum += v[i];
+  vsum/=my_nat;
+  for (int i = 0; i < my_nat; i++) 
+    v[i] -= vsum;
   
-  n=0;
+  n = 0;
   
   // If the user wants calculate initial energy and print initial coords
-  if (cout>0) {
-    for (i=0;i<nat;i++) 
-      accel(nat,i,&ep[i],&a[i],box,x);
-    printcoords(nat,n,x,ep,box);
+  if (cout > 0) {
+    for (i = 0; i < my_nat; i++) 
+      accel(my_nat, i, &ep[i], &a[i], box, x);
+    printcoords(my_nat, n, x, ep, box);
   }
   
   
   // Simulation proper
   
-  for (n=0;n<maxt;n++) {
+  for (int n=0; n < maxt; n++) {
     
-    for (i=0;i<nat;i++) v0[i]=v[i];
+    for (int i = 0; i < my_nat; i++) 
+      v0[i]=v[i];
     
-    for (i=0;i<nat;i++)
-      // New potential energy and acceleration
-      accel(nat,i,&ep[i],&a[i],box,x);
+    for (int i = 0; i < my_nat; i++)
+      accel(my_nat,i,&ep[i],&a[i],box,x); // New potential energy and acceleration
     
-    for (i=0;i<nat;i++) {
-      
+    for (int i = 0; i < my_nat; i++) {
       // Leap frog integration algorithm: update position and velocity
-      v[i]=v[i]+dt*a[i];
-      x[i]=x[i]+dt*v[i];
+      v[i] = v[i] + dt * a[i];
+      x[i] = x[i] + dt * v[i];
       
       // Check periodic boundary conditions
-      if (x[i]<0.0 ) x[i]=x[i]+box;
-      if (x[i]>=box) x[i]=x[i]-box;
+      if (x[i] < 0.0) 
+        x[i]=x[i]+box;
+      if (x[i] >= box) 
+        x[i]=x[i]-box;
       
       // Calculate kinetic energy (note: mass=1)
-      vave=(v0[i]+v[i])/2.0;
-      ek[i]=1.0/2.0*vave*vave;
-      
+      vave = (v0[i] + v[i]) / 2.0;
+      ek[i] = 1.0 / 2.0 * vave * vave;
     }
 
 
      // Calculate and print total potential end kinetic energies
      // and their sum that should be conserved.
-    epsum=eksum=0.0;
-    for (i=0;i<nat;i++) epsum+=ep[i];
-    for (i=0;i<nat;i++) eksum+=ek[i];
-    if (eout && n % eout == 0)
+
+    if (eout && n % eout == 0) {
+      double epsum = 0.0;
+      double eksum = 0.0;
+      for (i = 0;i < my_nat; i++) 
+        epsum+=ep[i];
+      for (i = 0; i < my_nat; i++) 
+        eksum += ek[i];
+
       printf("%20.10g %20.10g %20.10g %20.10g\n",dt*n,epsum+eksum,epsum,eksum);
+    }
     if (cout && n % cout == 0) 
-      printcoords(nat,n,x,ep,box);
+      printcoords(my_nat, n, x, ep, box);
 
   }
 
@@ -186,6 +200,6 @@ int main(int argc, char **argv)
     fclose(fd);
 
   MPI_Finalize();
-  return(0);
+  return 0;
 }
 
