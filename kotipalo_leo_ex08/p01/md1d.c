@@ -21,23 +21,27 @@ FILE *fd;
 void accel(int nat, int i, double *u, double *a, double box, double *x) {
   // Calculate the potential energy u 
   // and acceleration a of atom i.
-  int j,k;
-  double dxl,dxr;
+  int j, k;
+  double dxl, dxr;
       
-  j=i-1; if (j<0) j=nat-1;
-  k=i+1; if (k>=nat) k=0;
+  j = i ? i - 1 : nat - 1;
+  k = i < nat - 1 ? i + 1 : 0;
   
   dxl=x[i]-x[j];
   dxr=x[k]-x[i];
-  if (dxl<-box/2.0) dxl+=box;
-  if (dxl>=box/2.0) dxl-=box;
-  if (dxr<-box/2.0) dxr+=box;
-  if (dxr>=box/2.0) dxr-=box;
-  dxl-=d;
-  dxr-=d;
+  if (dxl <- box / 2.0) 
+    dxl+=box;
+  if (dxl >= box / 2.0) 
+    dxl-=box;
+  if (dxr <- box / 2.0) 
+    dxr+=box;
+  if (dxr >= box / 2.0) 
+    dxr-=box;
+  dxl -= d;
+  dxr -= d;
 
-  *u=(k1*(dxl*dxl+dxr*dxr)+k2*(dxl*dxl*dxl+dxr*dxr*dxr))/2.0;
-  *a=-(2.0*k1*(dxl-dxr)+3.0*k2*(dxl*dxl-dxr*dxr));
+  *u = (k1 * (dxl * dxl + dxr * dxr) + k2 * (dxl * dxl * dxl + dxr * dxr * dxr)) / 2.0;
+  *a = -(2.0 * k1 * (dxl - dxr) + 3.0 * k2 * (dxl * dxl - dxr * dxr));
 }
 
 void printcoords(int nat, int n, double *x, double *ep, double box) {
@@ -63,6 +67,7 @@ int main(int argc, char **argv)
   double dt;             // time step 
   double vsc;            // mean initial velocity
   double box;            // system size
+  int nat_total;         // total number of atoms
   int nat;               // number of atoms
   int maxt;              // number of time steps simulated
   int eout;              // energy output interval
@@ -94,22 +99,20 @@ int main(int argc, char **argv)
     return(-1);
   }
   
-  cout=0;
-  eout=1;
-  nat=atoi(*++argv);
-  dt=atof(*++argv);
-  maxt=atoi(*++argv);
-  vsc=atof(*++argv);
+  nat = atoi(argv[1]);
+  dt = atof(argv[2]);
+  maxt = atoi(argv[3]);
+  vsc = atof(argv[4]);
   
-  if (argc>5) eout=atoi(*++argv);
-  if (argc>6) cout=atoi(*++argv);
+  eout = argc > 5 ? atoi(argv[5]) : 1;
+  cout = argc > 6 ? atoi(argv[6]) : 0;
   
-  x=(double *)malloc((size_t)nat*sizeof(double));
-  v=(double *)malloc((size_t)nat*sizeof(double));
-  v0=(double *)malloc((size_t)nat*sizeof(double));
-  a=(double *)malloc((size_t)nat*sizeof(double));
-  ep=(double *)malloc((size_t)nat*sizeof(double));
-  ek=(double *)malloc((size_t)nat*sizeof(double));
+  x = (double*) malloc((size_t) nat * sizeof(double));
+  v = (double*) malloc((size_t) nat * sizeof(double));
+  v0 = (double*) malloc((size_t) nat * sizeof(double));
+  a = (double*) malloc((size_t) nat * sizeof(double));
+  ep = (double*) malloc((size_t) nat * sizeof(double));
+  ek = (double*) malloc((size_t) nat * sizeof(double));
   
   // Initialize atoms positions and give them random velocities
   box=nat;
@@ -119,19 +122,23 @@ int main(int argc, char **argv)
     v[i]=vsc*(double)rand()/RAND_MAX;
   }
 
-  if (cout>0) fd=fopen("coords.dat","w");
+  if (cout>0) 
+    fd=fopen("coords.dat","w");
   
   // Remove center of mass velocity
   vsum=0.0;
-  for (i=0;i<nat;i++) vsum+=v[i];
+  for (i=0;i<nat;i++) 
+    vsum+=v[i];
   vsum/=nat;
-  for (i=0;i<nat;i++) v[i]-=vsum;
+  for (i=0;i<nat;i++) 
+    v[i]-=vsum;
   
   n=0;
   
   // If the user wants calculate initial energy and print initial coords
   if (cout>0) {
-    for (i=0;i<nat;i++) accel(nat,i,&ep[i],&a[i],box,x);
+    for (i=0;i<nat;i++) 
+      accel(nat,i,&ep[i],&a[i],box,x);
     printcoords(nat,n,x,ep,box);
   }
   
@@ -168,16 +175,15 @@ int main(int argc, char **argv)
     epsum=eksum=0.0;
     for (i=0;i<nat;i++) epsum+=ep[i];
     for (i=0;i<nat;i++) eksum+=ek[i];
-    if (eout>0)
-      if (n%eout==0)
-	printf("%20.10g %20.10g %20.10g %20.10g\n",dt*n,epsum+eksum,epsum,eksum);
-    if (cout>0) 
-        if (n%cout==0)
-	  printcoords(nat,n,x,ep,box);
+    if (eout && n % eout == 0)
+      printf("%20.10g %20.10g %20.10g %20.10g\n",dt*n,epsum+eksum,epsum,eksum);
+    if (cout && n % cout == 0) 
+      printcoords(nat,n,x,ep,box);
 
   }
 
-  if (cout>0) fclose(fd);
+  if (cout>0) 
+    fclose(fd);
 
   MPI_Finalize();
   return(0);
