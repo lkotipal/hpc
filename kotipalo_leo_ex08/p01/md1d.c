@@ -21,19 +21,16 @@ FILE *fd;
 void accel(int nat, int i, double *u, double *a, double box, double *x) {
   // Calculate the potential energy u 
   // and acceleration a of atom i.
-  int j, k;
-  double dxl, dxr;
-      
-  j = i ? i - 1 : nat - 1;
-  k = i < nat - 1 ? i + 1 : 0;
+  int j = i ? i - 1 : nat;
+  int k = i < nat - 1 ? i + 1 : nat + 1;
   
-  dxl=x[i]-x[j];
-  dxr=x[k]-x[i];
-  if (dxl <- box / 2.0) 
+  double dxl = x[i] - x[j];
+  double dxr = x[k] - x[i];
+  if (dxl < -box / 2.0) 
     dxl+=box;
   if (dxl >= box / 2.0) 
     dxl-=box;
-  if (dxr <- box / 2.0) 
+  if (dxr < -box / 2.0) 
     dxr+=box;
   if (dxr >= box / 2.0) 
     dxr-=box;
@@ -45,35 +42,15 @@ void accel(int nat, int i, double *u, double *a, double box, double *x) {
 }
 
 void printcoords(int nat, int n, double *x, double *ep, double box) {
-  int i;
   fprintf(fd,"%d\n",nat);
   fprintf(fd," Frame number %d %d fs boxsize %f 10.0 10.0\n",n,n,box);
-  for (i=0;i<nat;i++) 
+  for (int i = 0; i < nat; i++) 
     fprintf(fd,"Fe %20.10g %20.10g %20.10g %20.10g\n",xsc*x[i],0.0,0.0,ep[i]);
 }
 
 
 int main(int argc, char **argv)
 {
-
-  double *x;             // atom positions
-  double *v;             //      velocities
-  double *v0;            //      previous veloocities (leap frog needs them)
-  double *a;             //      accelerations
-  double *ep;            //      potential energies
-  double *ek;            //      kinetic energies
-
-  double dt;             // time step 
-  double vsc;            // mean initial velocity
-  double box;            // system size
-  int total_nat;         // number of atoms
-  int my_nat;            // number of atoms in process
-  int maxt;              // number of time steps simulated
-  int eout;              // energy output interval
-  int cout;              // coordinate output interval (lot of data, beware!)
-  
-  double vsum,vave;
-
 	const int tag=50;
 	int id, ntasks, rc;
 	MPI_Status status;
@@ -84,6 +61,9 @@ int main(int argc, char **argv)
 	}
 	MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
+
+  int prev_id = id ? id - 1 : ntasks - 1;
+  int next_id = id < ntasks - 1 ? id + 1 : 0;
 
   // Get number of atoms, time step and simulation length from command line
   if (argc<5 || argc>7) {
@@ -99,61 +79,88 @@ int main(int argc, char **argv)
     return -1;
   }
   
-  total_nat = atoi(argv[1]);
+  int total_nat = atoi(argv[1]);
 
   if (total_nat % ntasks) {
     fprintf(stderr,"nat must be divisble by ntasks\n");
     MPI_Finalize();
     return -1;
   }
-  my_nat = total_nat / ntasks;
+  int my_nat = total_nat / ntasks;
   
-  dt = atof(argv[2]);
-  maxt = atoi(argv[3]);
-  vsc = atof(argv[4]);
+  double dt = atof(argv[2]);
+  int maxt = atoi(argv[3]);
+  double vsc = atof(argv[4]);
   
-  eout = argc > 5 ? atoi(argv[5]) : 1;
-  cout = argc > 6 ? atoi(argv[6]) : 0;
+  int eout = argc > 5 ? atoi(argv[5]) : 1;
+  int cout = argc > 6 ? atoi(argv[6]) : 0;
   
-  x = (double*) malloc((size_t) my_nat * sizeof(double));
-  v = (double*) malloc((size_t) my_nat * sizeof(double));
-  v0 = (double*) malloc((size_t) my_nat * sizeof(double));
-  a = (double*) malloc((size_t) my_nat * sizeof(double));
-  ep = (double*) malloc((size_t) my_nat * sizeof(double));
-  ek = (double*) malloc((size_t) my_nat * sizeof(double));
+  // x[my_nat] and x[my_nat + 1] left and right neighbors respectively
+  double* x = (double*) malloc((size_t) (my_nat + 2) * sizeof(double));
+  double* v = (double*) malloc((size_t) my_nat * sizeof(double));
+  double* v0 = (double*) malloc((size_t) my_nat * sizeof(double));
+  double* a = (double*) malloc((size_t) my_nat * sizeof(double));
+  double* ep = (double*) malloc((size_t) my_nat * sizeof(double));
+  double* ek = (double*) malloc((size_t) my_nat * sizeof(double));
+
+  double* ep_sums = id ? NULL : (double*) malloc((size_t) ntasks * sizeof(double));
+  double* ek_sums = id ? NULL : (double*) malloc((size_t) ntasks * sizeof(double));
+
+  double* all_x = id ? NULL : (double*) malloc((size_t) total_nat * sizeof(double));
+  double* all_ep = id ? NULL : (double*) malloc((size_t) total_nat * sizeof(double));
   
   // Initialize atoms positions and give them random velocities
-  box=my_nat;
-  srand(time(NULL));
-  for (int i = 0; i<my_nat; i++) {
-    x[i] = i;
+  double box = total_nat;
+  //srand(time(NULL));
+  // Use fixed seed according to task id
+  srand(id);
+  for (int i = 0; i < my_nat; i++) {
+    x[i] = i + id * my_nat;
     v[i] = vsc * (double) rand() / RAND_MAX;
   }
+
+  // Send left, receive from right
+  MPI_Send(&x[0], 1, MPI_DOUBLE, prev_id, tag, MPI_COMM_WORLD);
+  MPI_Recv(&x[my_nat + 1], 1, MPI_DOUBLE, next_id, tag, MPI_COMM_WORLD, &status);
+
+  // Send right, receive from left
+  MPI_Send(&x[my_nat - 1], 1, MPI_DOUBLE, next_id, tag, MPI_COMM_WORLD);
+  MPI_Recv(&x[my_nat], 1, MPI_DOUBLE, prev_id, tag, MPI_COMM_WORLD, &status);
 
   if (cout>0) 
     fd=fopen("coords.dat","w");
   
   // Remove center of mass velocity
-  vsum = 0.0;
+  double vsum = 0.0;
   for (int i = 0; i < my_nat; i++) 
     vsum += v[i];
-  vsum/=my_nat;
+  vsum /= my_nat;
   for (int i = 0; i < my_nat; i++) 
     v[i] -= vsum;
   
-  n = 0;
-  
   // If the user wants calculate initial energy and print initial coords
   if (cout > 0) {
-    for (i = 0; i < my_nat; i++) 
+    for (int i = 0; i < my_nat; i++) 
       accel(my_nat, i, &ep[i], &a[i], box, x);
-    printcoords(my_nat, n, x, ep, box);
+
+    MPI_Gather(x, my_nat, MPI_DOUBLE, all_x, my_nat, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Gather(ep, my_nat, MPI_DOUBLE, all_ep, my_nat, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    
+    if (id == 0)
+      printcoords(my_nat, 0, x, ep, box);
   }
   
   
   // Simulation proper
   
-  for (int n=0; n < maxt; n++) {
+  for (int n = 0; n < maxt; n++) {
+    // Send left, receive from right
+    MPI_Send(&x[0], 1, MPI_DOUBLE, prev_id, tag, MPI_COMM_WORLD);
+    MPI_Recv(&x[my_nat + 1], 1, MPI_DOUBLE, next_id, tag, MPI_COMM_WORLD, &status);
+
+    // Send right, receive from left
+    MPI_Send(&x[my_nat - 1], 1, MPI_DOUBLE, next_id, tag, MPI_COMM_WORLD);
+    MPI_Recv(&x[my_nat], 1, MPI_DOUBLE, prev_id, tag, MPI_COMM_WORLD, &status);
     
     for (int i = 0; i < my_nat; i++) 
       v0[i]=v[i];
@@ -173,7 +180,7 @@ int main(int argc, char **argv)
         x[i]=x[i]-box;
       
       // Calculate kinetic energy (note: mass=1)
-      vave = (v0[i] + v[i]) / 2.0;
+      double vave = (v0[i] + v[i]) / 2.0;
       ek[i] = 1.0 / 2.0 * vave * vave;
     }
 
@@ -184,15 +191,31 @@ int main(int argc, char **argv)
     if (eout && n % eout == 0) {
       double epsum = 0.0;
       double eksum = 0.0;
-      for (i = 0;i < my_nat; i++) 
+      for (int i = 0; i < my_nat; i++) 
         epsum+=ep[i];
-      for (i = 0; i < my_nat; i++) 
+      for (int i = 0; i < my_nat; i++) 
         eksum += ek[i];
+      
+      MPI_Gather(&epsum, 1, MPI_DOUBLE, ep_sums, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Gather(&eksum, 1, MPI_DOUBLE, ek_sums, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-      printf("%20.10g %20.10g %20.10g %20.10g\n",dt*n,epsum+eksum,epsum,eksum);
+      if (id == 0) {
+        for (int i = 1; i < ntasks; ++i) {
+          epsum += ep_sums[i];
+          eksum += ek_sums[i];
+        }
+
+        printf("%20.10g %20.10g %20.10g %20.10g\n",dt*n,epsum+eksum,epsum,eksum);
+      }
     }
-    if (cout && n % cout == 0) 
-      printcoords(my_nat, n, x, ep, box);
+
+    if (cout && n % cout == 0) {
+      MPI_Gather(x, my_nat, MPI_DOUBLE, all_x, my_nat, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Gather(ep, my_nat, MPI_DOUBLE, all_ep, my_nat, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      
+      if (id == 0)
+        printcoords(total_nat, n, all_x, all_ep, box);
+    }
 
   }
 
