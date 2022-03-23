@@ -155,12 +155,10 @@ int main(int argc, char **argv)
   
   for (int n = 0; n < maxt; n++) {
     // Send left, receive from right
-    MPI_Send(&x[0], 1, MPI_DOUBLE, prev_id, tag, MPI_COMM_WORLD);
-    MPI_Recv(&x[my_nat + 1], 1, MPI_DOUBLE, next_id, tag, MPI_COMM_WORLD, &status);
+    MPI_Sendrecv(&x[0], 1, MPI_DOUBLE, prev_id, tag, &x[my_nat + 1], 1, MPI_DOUBLE, next_id, tag, MPI_COMM_WORLD, &status);
 
     // Send right, receive from left
-    MPI_Send(&x[my_nat - 1], 1, MPI_DOUBLE, next_id, tag, MPI_COMM_WORLD);
-    MPI_Recv(&x[my_nat], 1, MPI_DOUBLE, prev_id, tag, MPI_COMM_WORLD, &status);
+    MPI_Sendrecv(&x[my_nat - 1], 1, MPI_DOUBLE, next_id, tag,&x[my_nat], 1, MPI_DOUBLE, prev_id, tag,  MPI_COMM_WORLD, &status);
     
     for (int i = 0; i < my_nat; i++) 
       v0[i]=v[i];
