@@ -10,7 +10,6 @@ pos2 = np.where(a==2, pos, 0)
 pos3 = np.where(a==3, pos, 0)
 
 nbins=int(ceil(log2(np.size(a)))) + 1
-print(nbins)
 (n1, _, _) = plt.hist(pos1, bins=nbins, range=(1, 300), alpha=0.7, label='Process 1')
 (n2, _, _) = plt.hist(pos2, bins=nbins, range=(1, 300), alpha=0.7, label='Process 2')
 (n3, _, _) = plt.hist(pos3, bins=nbins, range=(1, 300), alpha=0.7, label='Process 3')
@@ -19,4 +18,5 @@ plt.xlabel('Position')
 plt.ylabel('Occurrences')
 plt.savefig('p01.png')
 
-print(chi2_contingency(np.stack((n1, n2, n3))))
+(_, p, _, _) = chi2_contingency(np.stack((n1, n2, n3)))
+print(f'p = {p}')

@@ -28,7 +28,7 @@ int main(int argc,char *argv[])
 		for (int i = 1; i < ntasks; ++i)
 			p += ps[i];
 		p /= ntasks;
-		std::cout << "π = " << 4 * p << " +- " << 4 * p * std::sqrt((p - p*p) / (N * ntasks)) << std::endl;
+		std::cout << "pi = " << 4 * p << " +- " << 4 * p * std::sqrt((p - p*p) / (N * ntasks)) << std::endl;
 	}
 
 	MPI_Finalize();
