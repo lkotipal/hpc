@@ -11,8 +11,9 @@ void scatter_matrix(const Matrix* matrix_send, MPI_Datatype datatype_send, Distr
 {
 	int tag{0};
 	int id;
-	MPI_Status status;
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
+	MPI_Status status;
+	std::vector<MPI_Request> requests;
 
 	int dims[2];
 	int periods[2];
@@ -27,20 +28,27 @@ void scatter_matrix(const Matrix* matrix_send, MPI_Datatype datatype_send, Distr
 				int coords[2] {i, j};
 				int dest;
 				MPI_Cart_rank(communicator, coords, &dest);
-				MPI_Send(matrix_send->data() + dims[0] * m_p * m_p * j + m_p * i, 1, datatype_send, dest, tag, communicator);
+
+				MPI_Request request;
+				MPI_Isend(matrix_send->data() + dims[0] * m_p * m_p * j + m_p * i, 1, datatype_send, dest, tag, communicator, &request);
+				requests.push_back(request);
 			}
 		}
 	}
 
 	MPI_Recv(matrix_recv->data_at(0, 0), 1, datatype_recv, root, tag, communicator, &status);
+
+	for (MPI_Request r : requests)
+		MPI_Wait(&r, &status);
 }
 
 void gather_matrix(const Distributed_matrix* matrix_send, MPI_Datatype datatype_send, Matrix* matrix_recv, MPI_Datatype datatype_recv, int root, MPI_Comm communicator)
 {
 	int tag{1};
 	int id;
-	MPI_Status status;
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
+	MPI_Status status;
+	MPI_Request request;
 
 	int dims[2];
 	int periods[2];
@@ -49,7 +57,7 @@ void gather_matrix(const Distributed_matrix* matrix_send, MPI_Datatype datatype_
 
 	int m_p = matrix_send->n - 2;
 
-	MPI_Send(matrix_send->data_at(0, 0), 1, datatype_send, root, tag, communicator);
+	MPI_Isend(matrix_send->data_at(0, 0), 1, datatype_send, root, tag, communicator, &request);
 	if (id == root) {
 		for (int i = 0; i < dims[0]; ++i) {
 			for (int j = 0; j < dims[1]; ++j) {
@@ -60,6 +68,8 @@ void gather_matrix(const Distributed_matrix* matrix_send, MPI_Datatype datatype_
 			}
 		}
 	}
+
+	MPI_Wait(&request, &status);
 }
 
 void communicate_boundaries(const Distributed_matrix* matrix, MPI_Datatype row_type, MPI_Datatype col_type, MPI_Comm communicator)
