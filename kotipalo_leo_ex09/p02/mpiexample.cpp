@@ -152,7 +152,7 @@ int main(int argc,char *argv[])
 		all_x = new Matrix(m);
 		for (int i = 0; i < m; ++i)
 			for (int j = 0; j < m; ++j)
-				(*all_x)(i, j) = (i + 1) + (j + 1);
+				(*all_x)(i, j) = i + j;
 	}
 
 	int m_p = m / p;
@@ -185,7 +185,7 @@ int main(int argc,char *argv[])
 		std::cout << "t = 0" << std::endl << *all_x << std::endl;
 
 	Distributed_matrix next_x(m/p);
-	for (int t = 0; t <= 50; ++t)
+	for (int t = 1; t <= 50; ++t)
 	{
 		communicate_boundaries(my_x, row_type, col_type, cartesian_comm);
 
