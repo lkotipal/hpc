@@ -9,4 +9,4 @@ plt.bar(['1', '2', '4', '8'], mean_t, yerr=np.sqrt(var_t), capsize=2.0, label='A
 plt.xlabel(r'$N_\mathrm{tasks}$')
 plt.ylabel(r'$t$')
 plt.legend()
-plt.show()
+plt.savefig('p01.png')
