@@ -168,12 +168,8 @@ int main(int argc, char **argv)
         vave=(v0[i]+v[i])/2.0;
         ek[i]=1.0/2.0*vave*vave;
         
-      }
-
-      // Calculate and print total potential end kinetic energies
-      // and their sum that should be conserved.
-      #pragma omp for
-      for (i=0;i<nat;i++) {
+	// Calculate and print total potential end kinetic energies
+	// and their sum that should be conserved.
         epsum+=ep[i];
         eksum+=ek[i];
       }
