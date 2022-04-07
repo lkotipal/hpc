@@ -24,15 +24,23 @@ void accel(int nat, int i, double *u, double *a, double box, double *x) {
   int j,k;
   double dxl,dxr;
       
-  j=i-1; if (j<0) j=nat-1;
-  k=i+1; if (k>=nat) k=0;
+  j=i-1; 
+  if (j<0) 
+    j=nat-1;
+  k=i+1; 
+  if (k>=nat) 
+    k=0;
   
   dxl=x[i]-x[j];
   dxr=x[k]-x[i];
-  if (dxl<-box/2.0) dxl+=box;
-  if (dxl>=box/2.0) dxl-=box;
-  if (dxr<-box/2.0) dxr+=box;
-  if (dxr>=box/2.0) dxr-=box;
+  if (dxl<-box/2.0) 
+    dxl+=box;
+  if (dxl>=box/2.0) 
+    dxl-=box;
+  if (dxr<-box/2.0) 
+    dxr+=box;
+  if (dxr>=box/2.0) 
+    dxr-=box;
   dxl-=d;
   dxr-=d;
 
@@ -90,8 +98,10 @@ int main(int argc, char **argv)
   maxt=atoi(*++argv);
   vsc=atof(*++argv);
   
-  if (argc>5) eout=atoi(*++argv);
-  if (argc>6) cout=atoi(*++argv);
+  if (argc>5) 
+    eout=atoi(*++argv);
+  if (argc>6) 
+    cout=atoi(*++argv);
   
   x=(double *)malloc((size_t)nat*sizeof(double));
   v=(double *)malloc((size_t)nat*sizeof(double));
@@ -112,15 +122,18 @@ int main(int argc, char **argv)
   
   // Remove center of mass velocity
   vsum=0.0;
-  for (i=0;i<nat;i++) vsum+=v[i];
+  for (i=0;i<nat;i++) 
+    vsum+=v[i];
   vsum/=nat;
-  for (i=0;i<nat;i++) v[i]-=vsum;
+  for (i=0;i<nat;i++) 
+    v[i]-=vsum;
   
   n=0;
   
   // If the user wants calculate initial energy and print initial coords
   if (cout>0) {
-    for (i=0;i<nat;i++) accel(nat,i,&ep[i],&a[i],box,x);
+    for (i=0;i<nat;i++) 
+      accel(nat,i,&ep[i],&a[i],box,x);
     printcoords(nat,n,x,ep,box);
   }
   
@@ -128,45 +141,54 @@ int main(int argc, char **argv)
   // Simulation proper
   
   for (n=0;n<maxt;n++) {
-    
-    for (i=0;i<nat;i++) v0[i]=v[i];
-    
-    for (i=0;i<nat;i++)
-      // New potential energy and acceleration
-      accel(nat,i,&ep[i],&a[i],box,x);
-    
-    for (i=0;i<nat;i++) {
+    epsum=eksum=0.0;
+    #pragma omp parallel private(i, vave) firstprivate(dt, box, nat) shared(x, v, v0, a, ep, ek) reduction(+:epsum, eksum)
+    {
+      #pragma omp for
+      for (i=0;i<nat;i++)  {
+        v0[i]=v[i];
+        // New potential energy and acceleration
+        accel(nat,i,&ep[i],&a[i],box,x);
+        // Leap frog integration algorithm: update velocity
+        v[i]=v[i]+dt*a[i];
+      }
       
-      // Leap frog integration algorithm: update position and velocity
-      v[i]=v[i]+dt*a[i];
-      x[i]=x[i]+dt*v[i];
-      
-      // Check periodic boundary conditions
-      if (x[i]<0.0 ) x[i]=x[i]+box;
-      if (x[i]>=box) x[i]=x[i]-box;
-      
-      // Calculate kinetic energy (note: mass=1)
-      vave=(v0[i]+v[i])/2.0;
-      ek[i]=1.0/2.0*vave*vave;
-      
+      #pragma omp for
+      for (i=0;i<nat;i++) {
+        // Leap frog integration algorithm: update position
+        x[i]=x[i]+dt*v[i];
+        
+        // Check periodic boundary conditions
+        if (x[i]<0.0 )
+          x[i]=x[i]+box;
+        if (x[i]>=box)
+          x[i]=x[i]-box;
+        
+        // Calculate kinetic energy (note: mass=1)
+        vave=(v0[i]+v[i])/2.0;
+        ek[i]=1.0/2.0*vave*vave;
+        
+      }
+
+      // Calculate and print total potential end kinetic energies
+      // and their sum that should be conserved.
+      #pragma omp for
+      for (i=0;i<nat;i++) {
+        epsum+=ep[i];
+        eksum+=ek[i];
+      }
     }
 
-
-     // Calculate and print total potential end kinetic energies
-     // and their sum that should be conserved.
-    epsum=eksum=0.0;
-    for (i=0;i<nat;i++) epsum+=ep[i];
-    for (i=0;i<nat;i++) eksum+=ek[i];
     if (eout>0)
       if (n%eout==0)
-	printf("%20.10g %20.10g %20.10g %20.10g\n",dt*n,epsum+eksum,epsum,eksum);
+        printf("%20.10g %20.10g %20.10g %20.10g\n",dt*n,epsum+eksum,epsum,eksum);
     if (cout>0) 
-        if (n%cout==0)
-	  printcoords(nat,n,x,ep,box);
-
+      if (n%cout==0)
+        printcoords(nat,n,x,ep,box);
   }
 
-  if (cout>0) fclose(fd);
+  if (cout>0) 
+    fclose(fd);
   return(0);
 }
 
