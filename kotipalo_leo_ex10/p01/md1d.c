@@ -141,38 +141,35 @@ int main(int argc, char **argv)
   // Simulation proper
   
   for (n=0;n<maxt;n++) {
+    #pragma omp parallel for private(i) shared(x, v, v0, a, ep, ek, dt, box, nat)
+    for (i=0;i<nat;i++)  {
+      v0[i]=v[i];
+      // New potential energy and acceleration
+      accel(nat,i,&ep[i],&a[i],box,x);
+      // Leap frog integration algorithm: update velocity
+      v[i]=v[i]+dt*a[i];
+    }
+
     epsum=eksum=0.0;
-    #pragma omp parallel private(i, vave) firstprivate(dt, box, nat) shared(x, v, v0, a, ep, ek) reduction(+:epsum, eksum)
-    {
-      #pragma omp for
-      for (i=0;i<nat;i++)  {
-        v0[i]=v[i];
-        // New potential energy and acceleration
-        accel(nat,i,&ep[i],&a[i],box,x);
-        // Leap frog integration algorithm: update velocity
-        v[i]=v[i]+dt*a[i];
-      }
-      
-      #pragma omp for
-      for (i=0;i<nat;i++) {
-        // Leap frog integration algorithm: update position
-        x[i]=x[i]+dt*v[i];
-        
-        // Check periodic boundary conditions
-        if (x[i]<0.0 )
-          x[i]=x[i]+box;
-        if (x[i]>=box)
-          x[i]=x[i]-box;
-        
-        // Calculate kinetic energy (note: mass=1)
-        vave=(v0[i]+v[i])/2.0;
-        ek[i]=1.0/2.0*vave*vave;
-        
-	// Calculate and print total potential end kinetic energies
-	// and their sum that should be conserved.
-        epsum+=ep[i];
-        eksum+=ek[i];
-      }
+    #pragma omp parallel for private(i, vave) shared(x, v, v0, a, ep, ek, dt, box, nat) reduction(+:epsum, eksum)
+    for (i=0;i<nat;i++) {
+      // Leap frog integration algorithm: update position
+      x[i]=x[i]+dt*v[i];
+
+      // Check periodic boundary conditions
+      if (x[i]<0.0 )
+        x[i]=x[i]+box;
+      if (x[i]>=box)
+        x[i]=x[i]-box;
+
+      // Calculate kinetic energy (note: mass=1)
+      vave=(v0[i]+v[i])/2.0;
+      ek[i]=1.0/2.0*vave*vave;
+
+      // Calculate and print total potential end kinetic energies
+      // and their sum that should be conserved.
+      epsum+=ep[i];
+      eksum+=ek[i];
     }
 
     if (eout>0)
