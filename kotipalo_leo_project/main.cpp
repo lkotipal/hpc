@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
 	std::mt19937 rng {seed};
 	std::uniform_real_distribution<double> u {0, 1};
 	std::uniform_real_distribution<double> theta {0, 2 * std::numbers::pi};
-	constexpr int population {10};
-	constexpr int generations {1'000};
+	constexpr int population {1'000};
+	constexpr int generations {100};
 
 	std::vector<Point> square_points;
 	for (int i = 0; i < 20; ++i)
@@ -54,11 +54,13 @@ int main(int argc, char *argv[])
 		auto best_route = sm.best_route();
 		double l = sm.f(best_route);
 
-		std::cout << "Best route with length " << l << ":" << std::endl;
+		std::cout << "Best route for " << names[i] << " length " << l << std::endl;
+		std::ofstream f {names[i] + "_route.tsv"};
 		for (int j : best_route) {
 			Point p = points[j];
-			std::cout << std::fixed << p[0] << "\t" << p[1] << std::endl;
+			f << std::fixed << p[0] << "\t" << p[1] << std::endl;
 		}
+		f.close();
 	}
 
 	return 0;

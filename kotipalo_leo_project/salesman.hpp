@@ -29,7 +29,7 @@ class Salesman {
 
 inline Salesman::Salesman(const std::vector<Point>& cities, int population, std::uint_fast32_t seed) : cities{cities}, routes(population), rng{seed}
 {
-	std::vector<int> route;
+	std::vector<int> route(cities.size());
 	for (int i = 0; i < cities.size(); ++i)
 		route[i] = i;
 
@@ -64,11 +64,12 @@ inline double Salesman::f(const std::vector<int>& route) const
 inline void Salesman::evolve()
 {
 	std::vector<std::vector<int>> best_routes(routes.begin(), routes.begin() + routes.size() / 2);
-	std::uniform_int_distribution<int> idx(0, routes.size() - 1);
-	for (auto& r : routes) {
-		r = crossover(best_routes[idx(rng)], best_routes[idx(rng)]);	// Self-pollination allowed
-		mutate(r);
+	std::uniform_int_distribution<int> idx(0, best_routes.size() - 1);
+	for (int i = std::max(1, static_cast<int>(routes.size() / 8)); i < routes.size(); ++i) {
+		routes[i] = crossover(best_routes[idx(rng)], best_routes[idx(rng)]);	// Self-pollination allowed
+		mutate(routes[i]);
 	}
+	sort_routes();
 }
 
 inline void Salesman::mutate(std::vector<int>& route)
