@@ -1,0 +1,4 @@
+With 1 trials:
+Shortest path in square 3.985193 with 87 hits
+Shortest path in circle 6.073862 with 980 hits
+Shortest path in cities 1926.064378 with 320 hits
