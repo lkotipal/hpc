@@ -1,4 +1,3 @@
-With 1 trials:
-Shortest path in square 3.985193 with 87 hits
-Shortest path in circle 6.073862 with 980 hits
-Shortest path in cities 1926.064378 with 320 hits
+Best route for square length 4.1294
+Best route for circle length 6.07386
+Best route for cities length 1965.67

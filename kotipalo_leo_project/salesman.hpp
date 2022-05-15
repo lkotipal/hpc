@@ -21,6 +21,7 @@ class Salesman {
 
 		double delta_f(const std::vector<int>& route, const int i, const int j) const;
 
+		double T;
 		std::mt19937 rng;
 		std::uniform_real_distribution<double> u {0, 1};
 		std::vector<Point> cities;
@@ -29,12 +30,20 @@ class Salesman {
 
 inline Salesman::Salesman(const std::vector<Point>& cities, int population, std::uint_fast32_t seed) : cities{cities}, routes(population), rng{seed}
 {
+	for (int i = 0; i < cities.size(); ++i) { 
+        for (int j = i + 1; j < cities.size(); ++j) {
+            double dist = 2 * (cities[i] - cities[j]).norm();
+            if (dist > T)
+                T = dist;
+        }
+    }
+
 	std::vector<int> route(cities.size());
 	for (int i = 0; i < cities.size(); ++i)
 		route[i] = i;
 
 	for (int i = 0; i < population; ++i) {
-		std::shuffle(route.begin(), route.end(), rng);
+		std::shuffle(route.begin() + 1, route.end(), rng);
 		routes[i] = route;
 	}
 
@@ -74,7 +83,9 @@ inline void Salesman::evolve()
 
 inline void Salesman::mutate(std::vector<int>& route)
 {
-	std::uniform_int_distribution<int> idx(0, route.size() - 1);
+	// Don't move first point
+	// Retains ergodicity as routes are unique up to starting point
+	std::uniform_int_distribution<int> idx(1, route.size() - 1);
 	int i {idx(rng)};
 	int j;
 	do {
@@ -82,8 +93,10 @@ inline void Salesman::mutate(std::vector<int>& route)
 	} while (j == i);
 
 	// Only accept good mutations for now
-	if (delta_f(route, i, j) < 0)
-		std::swap(route[i], route[j]);
+	// if (delta_f(route, i, j) < 0)
+	// Always accept good mutations, accept bad mutations according to the M-B distribution
+	if (u(rng) < std::exp(-delta_f(route, i, j) / T));
+	 	std::swap(route[i], route[j]);
 }
 
 inline std::vector<int> Salesman::crossover(std::vector<int>& first, std::vector<int>& second)
@@ -92,9 +105,14 @@ inline std::vector<int> Salesman::crossover(std::vector<int>& first, std::vector
 	std::vector<int> child(first.size());
 
 	// Pick first node randomly between parents
-	auto first_it = first.begin();
-	auto second_it = second.begin();
-	child[0] = u(rng) < 0.5 ? *(first_it++) : *(second_it++);
+	// auto first_it = first.begin();
+	// auto second_it = second.begin();
+	//child[0] = u(rng) < 0.5 ? *(first_it++) : *(second_it++);
+
+	// First node is always first city
+	auto first_it = first.begin() + 1;
+	auto second_it = second.begin() + 1;
+	child[0] = 0;
 	for (auto it = child.begin() + 1; it < child.end(); ++it) {
 		// Advance iterators until we find elements not in child yet
 		while (std::find(child.begin(), it, *first_it) < it)
