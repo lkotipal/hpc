@@ -13,7 +13,9 @@ int main(int argc, char *argv[])
 	}
 
 	int id;
+	int ntasks;
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
+	MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
 
 	std::uint_fast32_t seed = 1;
 	if (argc > 1) {
