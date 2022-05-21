@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-l_cities = np.loadtxt('cities_lengths.tsv')
 for i in ('square', 'circle', 'cities'):
-    l = np.loadtxt(f'{i}_lengths.tsv')
+    l = np.loadtxt(f'{i}_lengths.tsv', skiprows=1, unpack=True)[0]
     if (i == 'square'):
         print(f'With {np.size(i)} trials:')
     print(f'Shortest path in {i} {np.min(l)} with {np.sum(l == np.min(l))} hits')

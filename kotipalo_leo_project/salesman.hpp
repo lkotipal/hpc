@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <mpi.h>
 #include <random>
 #include <vector>
 #include "point.hpp"
@@ -10,14 +11,16 @@
 class Salesman {
 	public:
 		Salesman(const std::vector<Point>& cities, int population, std::uint_fast32_t seed);
-		void simulate(int generations);
+		int simulate(int generations);
 		std::vector<int> best_route();
 		double f(const std::vector<int>& route) const;
 	private:
+		void communicate();
 		void evolve();
 		void mutate(std::vector<int>& route);
 		std::vector<int> crossover(std::vector<int>& first, std::vector<int>& second);
 		void sort_routes();
+		void shuffle_routes();
 
 		double delta_f(const std::vector<int>& route, const int i, const int j) const;
 
@@ -42,18 +45,30 @@ inline Salesman::Salesman(const std::vector<Point>& cities, int population, std:
 	for (int i = 0; i < cities.size(); ++i)
 		route[i] = i;
 
-	for (int i = 0; i < population; ++i) {
-		std::shuffle(route.begin() + 1, route.end(), rng);
+	for (int i = 0; i < population; ++i)
 		routes[i] = route;
-	}
 
 	sort_routes();
 }
 
-inline void Salesman::simulate(int generations)
+inline int Salesman::simulate(int generations)
 {
-	for (int i = 0; i < generations; ++i)
+	shuffle_routes();
+	double len = f(routes[0]);
+	int i {0};
+	int last_improved {0};
+	while (i - last_improved < generations) {
+		++i;
 		evolve();
+
+		double new_len = f(routes[0]);
+		if (new_len < len) {
+			len = new_len;
+			last_improved = i;
+		}
+		MPI_Allreduce(&last_improved, &last_improved, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+	}
+	return last_improved;
 }
 
 inline std::vector<int> Salesman::best_route()
@@ -70,6 +85,25 @@ inline double Salesman::f(const std::vector<int>& route) const
 	return d;
 }
 
+inline void Salesman::communicate()
+{
+	int id, ntasks;
+	MPI_Status status;
+	MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
+	MPI_Comm_rank(MPI_COMM_WORLD,&id);
+
+	int left = id ? id - 1 : ntasks - 1;
+	int right = id < ntasks - 1 ? id + 1 : 0;
+	
+	for (int i = 0; i < routes.size() / 4; ++i) {
+		MPI_Sendrecv(routes[i].data(), cities.size(), MPI_INT, left, 0, 
+					 routes[routes.size() / 2 + i].data(), cities.size(), MPI_INT, right, 0, MPI_COMM_WORLD, &status);
+		MPI_Sendrecv(routes[i].data(), cities.size(), MPI_INT, right, 0, 
+					 routes[3 * routes.size() / 4 + i].data(), cities.size(), MPI_INT, left, 0, MPI_COMM_WORLD, &status);
+	}
+	sort_routes();
+}
+
 inline void Salesman::evolve()
 {
 	std::vector<std::vector<int>> best_routes(routes.begin(), routes.begin() + routes.size() / 2);
@@ -79,6 +113,7 @@ inline void Salesman::evolve()
 		mutate(routes[i]);
 	}
 	sort_routes();
+	communicate();
 }
 
 inline void Salesman::mutate(std::vector<int>& route)
@@ -92,10 +127,9 @@ inline void Salesman::mutate(std::vector<int>& route)
 		j = idx(rng);
 	} while (j == i);
 
+	//if (u(rng) < std::exp(-delta_f(route, i, j) / T));
 	// Only accept good mutations for now
-	// if (delta_f(route, i, j) < 0)
-	// Always accept good mutations, accept bad mutations according to the M-B distribution
-	if (u(rng) < std::exp(-delta_f(route, i, j) / T));
+	if (delta_f(route, i, j) < 0)
 	 	std::swap(route[i], route[j]);
 }
 
@@ -103,11 +137,6 @@ inline std::vector<int> Salesman::crossover(std::vector<int>& first, std::vector
 {
 	assert(first.size() == second.size());
 	std::vector<int> child(first.size());
-
-	// Pick first node randomly between parents
-	// auto first_it = first.begin();
-	// auto second_it = second.begin();
-	//child[0] = u(rng) < 0.5 ? *(first_it++) : *(second_it++);
 
 	// First node is always first city
 	auto first_it = first.begin() + 1;
@@ -125,6 +154,14 @@ inline std::vector<int> Salesman::crossover(std::vector<int>& first, std::vector
 	}
 
 	return child;
+}
+
+inline void Salesman::shuffle_routes()
+{
+	for (int i = 0; i < routes.size(); ++i) {
+		std::shuffle(routes[i].begin() + 1, routes[i].end(), rng);
+	}
+	sort_routes();
 }
 
 inline void Salesman::sort_routes()

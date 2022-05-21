@@ -1,4 +1,4 @@
-CC=g++
+CC=mpic++
 CFLAGS=-std=c++20 -O2
 SRC=point.hpp salesman.hpp
 
