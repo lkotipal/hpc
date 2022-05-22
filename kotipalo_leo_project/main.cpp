@@ -34,68 +34,51 @@ int main(int argc, char *argv[])
 	std::mt19937 rng {seed};
 	std::uniform_real_distribution<double> u {0, 1};
 	std::uniform_real_distribution<double> theta {0, 2 * std::numbers::pi};
-	const int population {4 * 1'000 / ntasks};			// Make sure population is divisible by 4, and scale by task count
-	const int generations {ntasks > 10 ? ntasks : 10};	// Ensure best route is migrated
-	constexpr int vertex_count {100};
-	constexpr int trials {10};
+	const int population {1'000};
+	const int generations {10};
 
-	std::vector<Point> square_points;
-	for (int i = 0; i < vertex_count; ++i)
-		square_points.push_back(Point(std::array<double, 2>{u(rng), u(rng)}));
+	std::vector<double> x_vec;
+	std::vector<double> y_vec;
+	int n_cities {0};
+	if (id == 0) {
+		std::ifstream f {"cities.dat"};
+		while (!f.eof()) {
+			double x, y;
+			std::string name;
+			f >> x >> y >> name;
+			x_vec.push_back(x);
+			y_vec.push_back(y);
+			++n_cities;
+		}
+		f.close();
+	}
 
-	std::vector<Point> circle_points;
-	for(int i = 0; i < vertex_count; ++i)
-		circle_points.push_back(Point(1, theta(rng)));
+	MPI_Bcast(&n_cities, 1, MPI_INT, 0, MPI_COMM_WORLD)	;
+	x_vec.resize(n_cities);
+	y_vec.resize(n_cities);
+
+	MPI_Bcast(x_vec.data(), n_cities, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Bcast(y_vec.data(), n_cities, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
 	std::vector<Point> cities;
-	std::ifstream f {"20cities.dat"};
-	while (!f.eof()) {
-		double x, y;
-		std::string name;
-		f >> x >> y >> name;
-		cities.push_back(Point(std::array<double, 2>{x, y}));
-	}
-	f.close();
-
-	std::array<std::vector<Point>, 3> point_vecs {square_points, circle_points, cities}; 
-	std::array<std::string, 3> names {"square", "circle", "cities"};
+	cities.reserve(n_cities);
+	for (int i = 0; i < n_cities; ++i)
+		cities.push_back(std::array<double, 2> {x_vec[i], y_vec[i]});
 	
-	for (int i = 0; i < 3; ++i) {
-		std::ofstream f_lengths;
-		if (id == 0) {
-			f_lengths.open({names[i] + "_lengths.tsv"});
-			f_lengths << "length" << "\t\t" << "generations" << std::endl;
+	Salesman sm {cities, population, seed + id};
+
+	// Best route always ends up in process 0 before termination, so no need to reduce
+	int gens = sm.simulate(generations);
+	if (id == 0) {
+		auto route = sm.best_route();
+		double l = sm.f(route);
+		std::cout << "Best route length " << l << " found in " << gens << " generations." << std::endl;
+		std::ofstream f {"route.tsv"};
+		for (int j : route) {
+			Point p = cities[j];
+			f << std::fixed << p[0] << "\t" << p[1] << std::endl;
 		}
-
-		auto points = point_vecs[i];
-		Salesman sm {points, population, seed + id};
-
-		double best_len = std::numeric_limits<double>::infinity();
-		std::vector<int> best_route;
-		for (int j = 0; j < trials; ++j) {
-			int gens = sm.simulate(generations);
-			auto route = sm.best_route();
-			double l = sm.f(route);
-
-			if (id == 0)
-				f_lengths << std::fixed << l << "\t" << gens << std::endl;
-
-			if (l < best_len) {
-				best_len = l;
-				best_route = route;
-			}
-		}
-
-		// Best route always ends up in process 0 before termination, so no need to reduce
-		if (id == 0) {
-			std::cout << "Best route for " << names[i] << " length " << best_len << std::endl;
-			std::ofstream f {names[i] + "_route.tsv"};
-			for (int j : best_route) {
-				Point p = points[j];
-				f << std::fixed << p[0] << "\t" << p[1] << std::endl;
-			}
-			f.close();
-		}
+		f.close();
 	}
 
 	MPI_Finalize();
