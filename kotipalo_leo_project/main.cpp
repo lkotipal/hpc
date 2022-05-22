@@ -72,14 +72,13 @@ int main(int argc, char *argv[])
 	int gens = sm.simulate(generations);
 	if (id == 0) {
 		auto route = sm.best_route();
-		double l = sm.f(route);
-		std::cout << "Best route length " << l << " found in " << gens << " generations." << std::endl;
-		std::ofstream f {"route.tsv"};
-		for (int j : route) {
-			Point p = cities[j];
-			f << std::fixed << p[0] << "\t" << p[1] << std::endl;
-		}
-		f.close();
+		std::cout << "Best route length " << route.get_length() << " found in " << gens << " generations." << std::endl;
+		//std::ofstream f {"route.tsv"};
+		//for (int j : route) {
+		//	Point p = cities[j];
+		//	f << std::fixed << p[0] << "\t" << p[1] << std::endl;
+		//}
+		//f.close();
 	}
 
 	MPI_Finalize();

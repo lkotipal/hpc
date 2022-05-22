@@ -1,26 +1,13 @@
 #include "salesman.hpp"
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <mpi.h>
-
-Salesman::Salesman(const std::vector<Point>& cities, int population, std::uint_fast32_t seed) : cities{cities}, routes(population), rng{seed}
-{
-	std::vector<int> route(cities.size());
-	for (int i = 0; i < cities.size(); ++i)
-		route[i] = i;
-
-	for (int i = 0; i < population; ++i)
-		routes[i] = route;
-
-	sort_routes();
-}
 
 int Salesman::simulate(int generations)
 {
     // Shuffle routes before each simulation
 	shuffle_routes();
-	double len = f(routes[0]);
+	double len = routes[0].get_length();
 	int i {0};
 	int last_improved {0};
 	while (i - last_improved < generations) {
@@ -28,7 +15,7 @@ int Salesman::simulate(int generations)
 		evolve();
 
         // Check if any process has improved
-		double new_len = f(routes[0]);
+		double new_len = best_route().get_length();
 		if (new_len < len) {
 			len = new_len;
 			last_improved = i;
@@ -36,20 +23,6 @@ int Salesman::simulate(int generations)
 		MPI_Allreduce(&last_improved, &last_improved, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
 	}
 	return last_improved;
-}
-
-std::vector<int> Salesman::best_route()
-{
-	return routes[0];
-}
-
-double Salesman::f(const std::vector<int>& route) const
-{
-	double d {0.0};
-	for (int i = 0; i < route.size() - 1; ++i)
-		d += (cities[route[i]] - cities[route[i+1]]).norm();
-	d += (cities[route[route.size() - 1]] - cities[route[0]]).norm();
-	return d;
 }
 
 void Salesman::communicate()
@@ -63,99 +36,37 @@ void Salesman::communicate()
 	int right = id < ntasks - 1 ? id + 1 : 0;
 	
 	for (int i = 0; i < routes.size() / 4; ++i) {
-		MPI_Sendrecv(routes[i].data(), cities.size(), MPI_INT, left, 0, 
-					 routes[routes.size() / 2 + i].data(), cities.size(), MPI_INT, right, 0, MPI_COMM_WORLD, &status);
-		MPI_Sendrecv(routes[i].data(), cities.size(), MPI_INT, right, 0, 
-					 routes[3 * routes.size() / 4 + i].data(), cities.size(), MPI_INT, left, 0, MPI_COMM_WORLD, &status);
+        routes[i].send(left);
+        routes[routes.size() / 2 + i].recv(right, &status);
+        routes[i].send(right);
+        routes[3 * routes.size() / 4 + 1].recv(left, &status);
 	}
 	sort_routes();
 }
 
 void Salesman::evolve()
 {
-	std::vector<std::vector<int>> best_routes(routes.begin(), routes.begin() + routes.size() / 2);
+	std::vector<Route> best_routes(routes.begin(), routes.begin() + routes.size() / 2);
 	std::uniform_int_distribution<int> idx(0, best_routes.size() - 1);
-	for (int i = std::max(1, static_cast<int>(routes.size() / 8)); i < routes.size(); ++i) {
-		routes[i] = crossover(best_routes[idx(rng)], best_routes[idx(rng)]);	// Self-pollination allowed
-		mutate(routes[i]);
-	}
+	for (auto i = routes.begin() + std::max(1, static_cast<int>(routes.size() / 8)); i < routes.end(); ++i) {
+		*i = Route(best_routes[idx(rng)], best_routes[idx(rng)]);	// Self-pollination allowed
+        i->mutate(rng);
+    }
 	sort_routes();
 	communicate();
-}
-
-void Salesman::mutate(std::vector<int>& route)
-{
-	// Don't move first point
-	// Retains ergodicity as routes are unique up to starting point
-	std::uniform_int_distribution<int> idx(1, route.size() - 1);
-	int i {idx(rng)};
-	int j;
-	do {
-		j = idx(rng);
-	} while (j == i);
-
-	//if (u(rng) < std::exp(-delta_f(route, i, j) / T));
-	// Only accept good mutations for now
-	if (delta_f(route, i, j) < 0)
-	 	std::swap(route[i], route[j]);
-}
-
-std::vector<int> Salesman::crossover(std::vector<int>& first, std::vector<int>& second)
-{
-	assert(first.size() == second.size());
-	std::vector<int> child(first.size());
-
-	// First node is always first city
-	auto first_it = first.begin() + 1;
-	auto second_it = second.begin() + 1;
-	child[0] = 0;
-	for (auto it = child.begin() + 1; it < child.end(); ++it) {
-		// Advance iterators until we find elements not in child yet
-		while (std::find(child.begin(), it, *first_it) < it)
-			++first_it;
-		while (std::find(child.begin(), it, *second_it) < it)
-			++second_it;
-		
-		// Pick next node as the one with the shorter distance to previous node
-		*it = (cities[*first_it] - cities[*(it - 1)]).norm() < (cities[*second_it] - cities[*(it - 2)]).norm() ? *first_it : *second_it;
-	}
-
-	return child;
 }
 
 void Salesman::shuffle_routes()
 {
 	for (int i = 0; i < routes.size(); ++i) {
-		std::shuffle(routes[i].begin() + 1, routes[i].end(), rng);
+		routes[i].shuffle(rng);
 	}
 	sort_routes();
 }
 
 void Salesman::sort_routes()
 {
-	std::sort(routes.begin(), routes.end(), [this](const std::vector<int>& a, const std::vector<int>& b) -> bool {
-		return f(a) < f(b);
+	std::sort(routes.begin(), routes.end(), [](const Route& a, const Route& b) -> bool {
+		return a.get_length() < b.get_length();
 	});
-}
-
-// Extremely cursed
-double Salesman::delta_f(const std::vector<int>& route, const int i, const int j) const
-{
-	int prev_i = i == 0 ? cities.size() - 1 : i - 1;
-	int next_i = i == cities.size() - 1 ? 0 : i + 1;
-
-	int prev_j = j == 0 ? cities.size() - 1 : j - 1;
-	int next_j = j == cities.size() - 1 ? 0 : j + 1;
-
-	if (i == prev_j)
-		return (cities[route[i]] - cities[route[next_j]]).norm() + (cities[route[j]] - cities[route[prev_i]]).norm() -
-			(cities[route[i]] - cities[route[prev_i]]).norm() - (cities[route[j]] - cities[route[next_j]]).norm();
-	else if (i == next_j)
-		return (cities[route[i]] - cities[route[prev_j]]).norm() + (cities[route[j]] - cities[route[next_i]]).norm() -
-		(cities[route[i]] - cities[route[next_i]]).norm() - (cities[route[j]] - cities[route[prev_j]]).norm();
-	else 
-		return (cities[route[i]] - cities[route[prev_j]]).norm() + (cities[route[i]] - cities[route[next_j]]).norm() +
-		(cities[route[j]] - cities[route[prev_i]]).norm() + (cities[route[j]] - cities[route[next_i]]).norm() -
-		(cities[route[i]] - cities[route[prev_i]]).norm() - (cities[route[i]] - cities[route[next_i]]).norm() -
-		(cities[route[j]] - cities[route[prev_j]]).norm() - (cities[route[j]] - cities[route[next_j]]).norm();
 }

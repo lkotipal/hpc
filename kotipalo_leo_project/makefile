@@ -1,6 +1,6 @@
 CC=mpic++
 CFLAGS=-std=c++20 -O2
-SRC=point.hpp salesman.hpp
+SRC=point.hpp salesman.hpp route.hpp
 OBJ=salesman.o
 
 all: main test

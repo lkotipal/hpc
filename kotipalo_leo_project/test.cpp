@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	const int population {1'000};			// Make sure population is divisible by 4, and scale by task count
 	const int generations {ntasks};			// Ensure best route is migrated
 	constexpr int vertex_count {100};
-	constexpr int trials {1};
+	constexpr int trials {10};
 
 	std::vector<Point> square_points;
 	for (int i = 0; i < vertex_count; ++i)
@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
 	for(int i = 0; i < vertex_count; ++i)
 		circle_points.push_back(Point(1, theta(rng)));
 
-	std::array<std::vector<Point>, 3> point_vecs {square_points, circle_points}; 
-	std::array<std::string, 3> names {"square", "circle"};
+	std::array<std::vector<Point>, 2> point_vecs {square_points, circle_points}; 
+	std::array<std::string, 2> names {"square", "circle"};
 	
 	for (int i = 0; i < 2; ++i) {
 		std::ofstream f_lengths;
@@ -62,11 +62,11 @@ int main(int argc, char *argv[])
 		Salesman sm {points, population, seed + id};
 
 		double best_len = std::numeric_limits<double>::infinity();
-		std::vector<int> best_route;
+		Route best_route(&point_vecs[i]);
 		for (int j = 0; j < trials; ++j) {
 			int gens = sm.simulate(generations);
 			auto route = sm.best_route();
-			double l = sm.f(route);
+			double l = route.get_length();
 
 			if (id == 0)
 				f_lengths << std::fixed << l << "\t" << gens << std::endl;
@@ -80,12 +80,12 @@ int main(int argc, char *argv[])
 		// Best route always ends up in process 0 before termination, so no need to reduce
 		if (id == 0) {
 			std::cout << "Best route for " << names[i] << " length " << best_len << std::endl;
-			std::ofstream f {names[i] + "_route.tsv"};
-			for (int j : best_route) {
-				Point p = points[j];
-				f << std::fixed << p[0] << "\t" << p[1] << std::endl;
-			}
-			f.close();
+			//std::ofstream f {names[i] + "_route.tsv"};
+			//for (int j : best_route) {
+			//	Point p = points[j];
+			//	f << std::fixed << p[0] << "\t" << p[1] << std::endl;
+			//}
+			//f.close();
 		}
 	}
 
