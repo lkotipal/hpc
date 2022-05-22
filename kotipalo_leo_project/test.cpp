@@ -1,6 +1,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <mpi.h>
 #include <numbers>
 #include "point.hpp"
 #include "salesman.hpp"
