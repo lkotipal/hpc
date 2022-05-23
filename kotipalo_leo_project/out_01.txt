@@ -1,3 +1,0 @@
-Best route for square length 4.1294
-Best route for circle length 6.07386
-Best route for cities length 1965.67
