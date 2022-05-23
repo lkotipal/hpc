@@ -57,6 +57,10 @@ void Route::calculate_length()
 // Extremely cursed
 double Route::delta_length(const int i, const int j) const
 {
+    // Trivial routes
+    if (route.size() < 4)
+        return 0.0;
+
 	int prev_i = i == 0 ? cities->size() - 1 : i - 1;
 	int next_i = i == cities->size() - 1 ? 0 : i + 1;
 

@@ -66,6 +66,10 @@ void Route::shuffle(RNG rng)
 template <typename RNG>
 void Route::mutate(RNG rng)
 {
+    // No mutations possible
+    if (route.size() < 3)
+        return;
+
 	// Don't move first point
 	// Retains ergodicity as routes are unique up to starting point
 	std::uniform_int_distribution<int> idx(1, route.size() - 1);

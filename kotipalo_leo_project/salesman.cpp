@@ -32,14 +32,20 @@ void Salesman::communicate()
 	MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
 
+    // No communication needed
+    if (ntasks < 2)
+        return;
+
 	int left = id ? id - 1 : ntasks - 1;
 	int right = id < ntasks - 1 ? id + 1 : 0;
 	
 	for (int i = 0; i < routes.size() / 4; ++i) {
         routes[i].send(left);
         routes[routes.size() / 2 + i].recv(right, &status);
-        routes[i].send(right);
-        routes[3 * routes.size() / 4 + 1].recv(left, &status);
+        if (ntasks > 2) {
+            routes[i].send(right);
+            routes[3 * routes.size() / 4 + 1].recv(left, &status);
+        }
 	}
 	sort_routes();
 }

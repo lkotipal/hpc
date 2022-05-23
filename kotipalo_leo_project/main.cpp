@@ -1,4 +1,6 @@
+#include <cerrno>
 #include <cmath>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <mpi.h>
@@ -18,10 +20,22 @@ int main(int argc, char *argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
 	MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
 
-	std::uint_fast32_t seed = 1;
+	std::string in_file;
 	if (argc > 1) {
+		in_file = argv[1];
+		if (id == 0)
+			std::clog << "Using file " << in_file << " as input." << std::endl;
+	} else {
+		if (id == 0)
+			std::clog << "Usage: mpirun -np NTASKS salesman.exe INPUT (SEED)" << std::endl;
+		MPI_Finalize();
+		return 0;
+	}
+
+	std::uint_fast32_t seed = 1;
+	if (argc > 2) {
 		try {
-			seed = std::stoi(argv[1]);
+			seed = std::stoi(argv[2]);
 		} catch (std::invalid_argument e) {
 			if (id == 0)
 				std::clog << "Invalid seed given." << std::endl;
@@ -42,7 +56,11 @@ int main(int argc, char *argv[])
 	std::vector<double> y_vec;
 	int n_cities {0};
 	if (id == 0) {
-		std::ifstream f {"cities.dat"};
+		std::ifstream f {in_file};
+		if (f.fail()) {
+			std::cerr << "Could not read " << in_file << ": " << std::strerror(errno) << std::endl;
+			MPI_Abort(MPI_COMM_WORLD, errno);
+		}
 		while (!f.eof()) {
 			double x, y;
 			std::string name;
@@ -76,10 +94,6 @@ int main(int argc, char *argv[])
 		std::ofstream f {"route.tsv"};
 		f << std::fixed << route;
 		f.close();
-		//for (int j : route) {
-		//	Point p = cities[j];
-		//	f << std::fixed << p[0] << "\t" << p[1] << std::endl;
-		//}
 	}
 
 	MPI_Finalize();

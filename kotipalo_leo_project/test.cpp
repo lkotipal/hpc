@@ -18,10 +18,25 @@ int main(int argc, char *argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD,&id);
 	MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
 
-	std::uint_fast32_t seed = 1;
+	int vertex_count;
 	if (argc > 1) {
 		try {
-			seed = std::stoi(argv[1]);
+			vertex_count = std::stoi(argv[1]);
+		} catch (std::invalid_argument e) {
+			if (id == 0)
+				std::clog << "Invalid vertex count given." << std::endl;
+		}
+	} else {
+		if (id == 0)
+			std::clog << "Usage: mpirun -np NTASKS test.exe N_VERTEX (SEED)" << std::endl;
+		MPI_Finalize();
+		return 0;
+	}
+
+	std::uint_fast32_t seed = 1;
+	if (argc > 2) {
+		try {
+			seed = std::stoi(argv[2]);
 		} catch (std::invalid_argument e) {
 			if (id == 0)
 				std::clog << "Invalid seed given." << std::endl;
@@ -37,7 +52,6 @@ int main(int argc, char *argv[])
 	std::uniform_real_distribution<double> theta {0, 2 * std::numbers::pi};
 	const int population {1'000};			// Make sure population is divisible by 4, and scale by task count
 	const int generations {ntasks};			// Ensure best route is migrated
-	constexpr int vertex_count {100};
 	constexpr int trials {10};
 
 	std::vector<Point> square_points;
@@ -81,7 +95,7 @@ int main(int argc, char *argv[])
 		if (id == 0) {
 			std::cout << "Best route for " << names[i] << " length " << best_len << std::endl;
 			std::ofstream f {names[i] + "_route.tsv"};
-			f << best_route;
+			f << std::fixed << best_route;
 			f.close();
 		}
 	}
