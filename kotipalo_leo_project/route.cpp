@@ -1,3 +1,4 @@
+#include <set>
 #include "route.hpp"
 
 Route::Route(std::vector<Point>* cities) : cities{cities}, route(cities->size())
@@ -14,16 +15,20 @@ Route::Route(const Route& first, const Route& second) : cities {first.cities}, r
 	// First node is always first city
 	auto first_it = first.route.begin() + 1;
 	auto second_it = second.route.begin() + 1;
+    std::set<int> in_child;
 	route[0] = 0;
+    in_child.insert(0);
 	for (auto it = route.begin() + 1; it < route.end(); ++it) {
 		// Advance iterators until we find elements not in child yet
-		while (std::find(route.begin(), it, *first_it) < it)
+		while (in_child.find(*first_it) != in_child.end())
 			++first_it;
-		while (std::find(route.begin(), it, *second_it) < it)
+		while (in_child.find(*second_it) != in_child.end())
 			++second_it;
 		
 		// Pick next node as the one with the shorter distance to previous node
-		*it = (cities->at(*first_it) - cities->at(*(it - 1))).norm() < (cities->at(*second_it) - cities->at(*(it - 2))).norm() ? *first_it : *second_it;
+        int to_add = (cities->at(*first_it) - cities->at(*(it - 1))).norm() < (cities->at(*second_it) - cities->at(*(it - 2))).norm() ? *first_it : *second_it;
+        in_child.insert(to_add);
+        *it = to_add;
 	}
 
     calculate_length();
