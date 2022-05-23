@@ -1,0 +1,11 @@
+Requires mpic++ and a compiler supporting the C++20 standard.
+
+Compiling all targets:
+	make
+	make all
+
+Compiling main program:
+	make main
+
+Compiling test program:
+	make test
