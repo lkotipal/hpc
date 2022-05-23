@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ntasks=4
-for i in 10 20
+for i in 1 2 3 4 5 6 7 8 9 10 20
 do 
 	n=$((10*i))
 	echo $n
