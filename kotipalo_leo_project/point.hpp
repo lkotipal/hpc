@@ -2,7 +2,7 @@
 #define POINT_HPP
 #include <array>
 #include <cmath>
-#include <random>
+#include <iostream>
 
 class Point {
 	public:
@@ -13,32 +13,22 @@ class Point {
 		double operator[](int idx) const {return x[idx];}
 	private:
 		std::array<double, 2> x;
-		inline static std::normal_distribution<double> dis;
 };
 
-inline Point operator+(const Point& p1, const Point& p2)
-{
-	return Point(std::array<double, 2> {p1[0] + p2[0], p1[1] + p2[1]});
-}
+// Addition of vectors
+Point operator+(const Point& p1, const Point& p2);
 
-inline Point operator-(const Point& p1, const Point& p2)
-{
-	return p1 + -p2;
-}
+// Subtraction of vectors
+Point operator-(const Point& p1, const Point& p2);
 
-inline Point operator*(const double r, const Point& p)
-{
-	return Point(std::array<double, 2> {r * p[0], r * p[1]});
-}
+// Multiplying a vector with a real
+Point operator*(const double r, const Point& p);
+Point operator*(const Point& p, const double r);
 
-inline Point operator*(const Point& p, const double r)
-{
-	return r * p;
-}
+// Dividing a vector with a real
+Point operator/(const Point& p, const double r);
 
-inline Point operator/(const Point& p, const double r)
-{
-	return p * (1.0 / r);
-}
+// ostream output
+std::ostream& operator<<(std::ostream& os, const Point& p);
 
 #endif

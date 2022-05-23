@@ -80,12 +80,9 @@ int main(int argc, char *argv[])
 		// Best route always ends up in process 0 before termination, so no need to reduce
 		if (id == 0) {
 			std::cout << "Best route for " << names[i] << " length " << best_len << std::endl;
-			//std::ofstream f {names[i] + "_route.tsv"};
-			//for (int j : best_route) {
-			//	Point p = points[j];
-			//	f << std::fixed << p[0] << "\t" << p[1] << std::endl;
-			//}
-			//f.close();
+			std::ofstream f {names[i] + "_route.tsv"};
+			f << best_route;
+			f.close();
 		}
 	}
 

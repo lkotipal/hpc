@@ -73,12 +73,13 @@ int main(int argc, char *argv[])
 	if (id == 0) {
 		auto route = sm.best_route();
 		std::cout << "Best route length " << route.get_length() << " found in " << gens << " generations." << std::endl;
-		//std::ofstream f {"route.tsv"};
+		std::ofstream f {"route.tsv"};
+		f << std::fixed << route;
+		f.close();
 		//for (int j : route) {
 		//	Point p = cities[j];
 		//	f << std::fixed << p[0] << "\t" << p[1] << std::endl;
 		//}
-		//f.close();
 	}
 
 	MPI_Finalize();
