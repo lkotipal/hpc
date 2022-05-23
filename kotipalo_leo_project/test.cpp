@@ -50,60 +50,23 @@ int main(int argc, char *argv[])
 	}
 	MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD)	;
 
-	std::mt19937 rng {seed};
+	std::mt19937 rng {1}; // Always use the same seed here so outputs with different seed are comparable
 	std::uniform_real_distribution<double> u {0, 1};
 	std::uniform_real_distribution<double> theta {0, 2 * std::numbers::pi};
 	const int population {100 * vertex_count / ntasks};			// Make sure population is divisible by 4
 	const int generations {10};
 	constexpr int trials {100};
 
-	std::vector<Point> square_points;
-	for (int i = 0; i < vertex_count; ++i)
-		square_points.push_back(Point(std::array<double, 2>{u(rng), u(rng)}));
-
 	std::vector<Point> circle_points;
 	for(int i = 0; i < vertex_count; ++i)
 		circle_points.push_back(Point(1, theta(rng)));
 
-	std::array<std::vector<Point>, 2> point_vecs {square_points, circle_points}; 
-	std::array<std::string, 2> names {"square", "circle"};
-	
-	for (int i = 0; i < 2; ++i) {
-		std::ofstream f_lengths;
-		if (id == 0) {
-			f_lengths.open({names[i] + "_lengths.tsv"});
-			f_lengths << "length" << "\t\t" << "generations" << std::endl;
-		}
+	Salesman sm {circle_points, population, seed + id};
 
-		auto points = point_vecs[i];
-		Salesman sm {points, population, seed + id};
-
-		double best_len = std::numeric_limits<double>::infinity();
-		Route best_route(&point_vecs[i]);
-		for (int j = 0; j < trials; ++j) {
-			int gens = sm.simulate(generations);
-			auto route = sm.best_route();
-			double l = route.get_length();
-
-			if (id == 0)
-				f_lengths << std::fixed << l << "\t" << gens << std::endl;
-
-			if (l < best_len) {
-				best_len = l;
-				best_route = route;
-			}
-		}
-
-		// Best route always ends up in process 0 before termination, so no need to reduce
-		if (id == 0) {
-			std::cout << "Best route for " << names[i] << " length " << best_len << std::endl;
-			std::ofstream f {names[i] + "_route.tsv"};
-			f << std::fixed << best_route;
-			f.close();
-		}
-	}
+	int gens = sm.simulate(generations);
+	if (id == 0)
+		std::cout << std::fixed << sm.best_route().get_length() << "\t" << gens << std::endl;
 
 	MPI_Finalize();
-
 	return 0;
 }
