@@ -33,26 +33,29 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	std::uint_fast32_t seed = 1;
-	if (argc > 2) {
-		try {
-			seed = std::stoi(argv[2]);
-		} catch (std::invalid_argument e) {
-			if (id == 0)
+	std::uint_fast32_t seed;
+	if (id == 0) {
+		if (argc > 2) {
+			try {
+				seed = std::stoi(argv[2]);
+			} catch (std::invalid_argument e) {
 				std::clog << "Invalid seed given." << std::endl;
+			}
+		} else {
+			std::clog << "No seed given." << std::endl;
+			std::random_device r;
+			seed = r();
 		}
-	} else if (id == 0) {
-		std::clog << "No seed given." << std::endl;
-	}
-	if (id == 0)
 		std::clog << "Using seed " << seed << std::endl;
+	}
+	MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD)	;
 
 	std::mt19937 rng {seed};
 	std::uniform_real_distribution<double> u {0, 1};
 	std::uniform_real_distribution<double> theta {0, 2 * std::numbers::pi};
-	const int population {1'000};			// Make sure population is divisible by 4, and scale by task count
-	const int generations {ntasks};			// Ensure best route is migrated
-	constexpr int trials {10};
+	const int population {100 * vertex_count / ntasks};			// Make sure population is divisible by 4
+	const int generations {10};
+	constexpr int trials {100};
 
 	std::vector<Point> square_points;
 	for (int i = 0; i < vertex_count; ++i)

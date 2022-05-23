@@ -32,25 +32,27 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	std::uint_fast32_t seed = 1;
-	if (argc > 2) {
-		try {
-			seed = std::stoi(argv[2]);
-		} catch (std::invalid_argument e) {
-			if (id == 0)
+	std::uint_fast32_t seed;
+	if (id == 0) {
+		if (argc > 2) {
+			try {
+				seed = std::stoi(argv[2]);
+			} catch (std::invalid_argument e) {
 				std::clog << "Invalid seed given." << std::endl;
+			}
+		} else {
+			std::clog << "No seed given." << std::endl;
+			std::random_device r;
+			seed = r();
 		}
-	} else if (id == 0) {
-		std::clog << "No seed given." << std::endl;
-	}
-	if (id == 0)
 		std::clog << "Using seed " << seed << std::endl;
+	}
+	MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD)	;
 
 	std::mt19937 rng {seed};
 	std::uniform_real_distribution<double> u {0, 1};
 	std::uniform_real_distribution<double> theta {0, 2 * std::numbers::pi};
-	const int population {1'000};
-	const int generations {10};
+	constexpr int generations {10};
 
 	std::vector<double> x_vec;
 	std::vector<double> y_vec;
@@ -61,16 +63,15 @@ int main(int argc, char *argv[])
 			std::cerr << "Could not read " << in_file << ": " << std::strerror(errno) << std::endl;
 			MPI_Abort(MPI_COMM_WORLD, errno);
 		}
-		while (!f.eof()) {
-			double x, y;
-			std::string name;
-			f >> x >> y >> name;
+		double x, y;
+		while (f >> x >> y) {
 			x_vec.push_back(x);
 			y_vec.push_back(y);
 			++n_cities;
 		}
 		f.close();
 	}
+
 
 	MPI_Bcast(&n_cities, 1, MPI_INT, 0, MPI_COMM_WORLD)	;
 	x_vec.resize(n_cities);
@@ -84,6 +85,7 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < n_cities; ++i)
 		cities.push_back(std::array<double, 2> {x_vec[i], y_vec[i]});
 	
+	const int population {100 * n_cities / ntasks};
 	Salesman sm {cities, population, seed + id};
 
 	// Best route always ends up in process 0 before termination, so no need to reduce
